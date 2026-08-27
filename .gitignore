@@ -60,11 +60,13 @@ CLAUDE.md
 !.env.example
 *.pem
 
-# MCP server config. Holds the 21st.dev API key (21st_sk_...) in plaintext.
+# MCP server config. Holds the 21st.dev API key in plaintext.
 # This repo is the source of a PUBLIC website — a leaked key here is a leaked key
 # forever, since old versions stay in history. Added 2026-08-27, BEFORE connecting
 # 21st.dev, per the roadmap's Phase 1 ordering.
-# Verify with: git grep 21st_sk_   (must return nothing)
+# Verify with:  git grep 21st_sk_ -- ':!.gitignore'   (must return nothing)
+# The pathspec excludes this file — without it the check matches its own
+# documentation and always "fails", which trains you to ignore it.
 .mcp.json
 
 # ── Node / Next.js ──────────────────────────────────────────────────────────

@@ -29,23 +29,40 @@
    Three theme states, per MASTER.md §5.5: an explicit choice stamps .dark or
    .light; the default (no stamp) follows the OS. The :not(.light) guard is what
    makes an explicit light choice beat a dark OS. */
+/* The dark values are defined ONCE here and aliased by both selectors below.
+   They were previously written out twice; nothing enforced parity, so editing one
+   block and not the other would have silently broken a single theme state with no
+   build error. */
+:root {
+  --d-ground:  #0A0A0A;
+  --d-surface: #141414;
+  --d-ink:     #EDEDED;
+  --d-dim:     #9CA3AF;
+  --d-line:    #666B75;  /* NOT #4A4A4A — that measured 2.23:1, failing WCAG 1.4.11. §2.2 */
+  --d-accent:  #6699FF;
+}
+
+/* Default state: no class stamped, follow the OS. The :not(.light) guard is what
+   lets an explicit light choice beat a dark OS. */
 @media (prefers-color-scheme: dark) {
   :root:not(.light) {
-    --ground:  #0A0A0A;
-    --surface: #141414;
-    --ink:     #EDEDED;
-    --dim:     #9CA3AF;
-    --line:    #666B75;  /* NOT #4A4A4A — that measured 2.23:1, failing WCAG 1.4.11. §2.2 */
-    --accent:  #6699FF;
+    --ground:  var(--d-ground);
+    --surface: var(--d-surface);
+    --ink:     var(--d-ink);
+    --dim:     var(--d-dim);
+    --line:    var(--d-line);
+    --accent:  var(--d-accent);
   }
 }
+
+/* Explicit choice: wins regardless of OS. */
 :root.dark {
-  --ground:  #0A0A0A;
-  --surface: #141414;
-  --ink:     #EDEDED;
-  --dim:     #9CA3AF;
-  --line:    #666B75;
-  --accent:  #6699FF;
+  --ground:  var(--d-ground);
+  --surface: var(--d-surface);
+  --ink:     var(--d-ink);
+  --dim:     var(--d-dim);
+  --line:    var(--d-line);
+  --accent:  var(--d-accent);
 }
 
 /* ── Spacing (MASTER.md §4) ───────────────────────────────────────────────── */
@@ -76,12 +93,21 @@
   --font-sans: var(--font-fira-sans), system-ui, -apple-system, sans-serif;
   --font-mono: var(--font-fira-code), ui-monospace, "SF Mono", Menlo, monospace;
 
+  /* MASTER.md §5.4: hover/focus state changes are 120ms linear. Tailwind's
+     defaults are 150ms cubic-bezier(0.4,0,0.2,1); overriding them here makes
+     every transition-* utility compliant without per-element duration classes. */
+  --default-transition-duration: 120ms;
+  --default-transition-timing-function: linear;
+
   --spacing-cell:    var(--pad-cell);
   --spacing-section: var(--pad-section);
   --spacing-page:    var(--pad-page);
 
-  --radius-sm: 0rem; --radius-md: 0rem; --radius-lg: 0rem;
-  --radius-xl: 0rem; --radius-2xl: 0rem; --radius-3xl: 0rem; --radius-4xl: 0rem;
+  /* Derived from --radius so there is a single source. brutalism → 0px, no
+     exceptions (MASTER.md §5.1). shadcn's button reads var(--radius-md). */
+  --radius-sm: var(--radius); --radius-md: var(--radius); --radius-lg: var(--radius);
+  --radius-xl: var(--radius); --radius-2xl: var(--radius);
+  --radius-3xl: var(--radius); --radius-4xl: var(--radius);
 
   /* shadcn's semantic names mapped onto ours, so its components inherit the
      H72 identity instead of shipping their own greys. */

@@ -282,7 +282,10 @@ viewport; that constancy is what makes the structure read as a grid rather than 
 
 - Outer wrapper: `1px solid var(--line)`, `max-width: 1120px`, centred.
 - Every region separated by `1px solid var(--line)`. **`border-radius: 0` everywhere, no exceptions**
-  (`brutalism` → `--border-radius: 0px`).
+  (`brutalism` → `--border-radius: 0px`). *Implemented as `--radius: 0rem` in `globals.css` — the
+  shadcn/Tailwind convention name, numerically identical. The whole `--radius-*` scale derives from
+  it, so there is one value to change. Named here as the row names it; named there as the framework
+  expects it.*
 - **1px only.** The row offers `2-4px`; that is the anti-design register and is rejected (§0.4).
 - Adjacent boxed elements collapse borders with `margin-left: -1px` / `margin-top: -1px`. No
   doubled 2px seams — a doubled seam is a bug, not a style.
@@ -330,6 +333,18 @@ reads as broken rather than disciplined.
 
 - Hover/focus state changes: `120ms linear` on colour only.
 - Theme switch: `120ms linear` on `background-color` and `color`.
+
+> **⚠ Implementation note added 2026-08-27, raised by round-2 review — read before Phase 3.**
+> These two cases are implemented by overriding Tailwind's global defaults in `globals.css`
+> (`--default-transition-duration: 120ms`, `--default-transition-timing-function: linear`),
+> because Tailwind otherwise ships `150ms cubic-bezier(0.4,0,0.2,1)` and every `transition-*`
+> utility would silently miss this spec. **That override is broader than this section's scope.**
+> It reaches every bare `transition-*` utility in the app, including any shadcn/Radix primitive
+> added later with entrance/exit motion. Nothing is harmed today — every current use is exactly
+> the hover-colour case. But **`120ms linear` is right for colour and wrong for movement**: it
+> reads abrupt on anything that travels. When Phase 3 adds real motion, either give those
+> components explicit `duration-*`/`ease-*` classes or narrow the override. Do not discover
+> this by feel.
 - **No** scroll-jacking, parallax, or entrance animations that replay on navigation.
 - `prefers-reduced-motion: reduce` → all transitions to `0s`, from the first animated element.
 
