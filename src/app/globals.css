@@ -1,0 +1,137 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   H72 Labs — design tokens
+   IMPLEMENTATION OF design-system/h72labs-website/MASTER.md.
+   That file is the spec. When this file and MASTER.md disagree, MASTER.md is
+   correct and this file is the bug. Do not change a value here without changing
+   it there — every value in MASTER.md carries provenance and a measured contrast
+   ratio, and an undocumented edit here silently invalidates both.
+
+   Direction: FRAME. The frame is the identity.
+   ───────────────────────────────────────────────────────────────────────────── */
+
+@custom-variant dark (&:is(.dark *));
+
+/* ── Light (MASTER.md §1.1) ───────────────────────────────────────────────── */
+:root {
+  --ground:  #FFFFFF;
+  --surface: #F7F7F8;
+  --ink:     #111827;
+  --dim:     #666B75;
+  --line:    #111827;
+  --accent:  #2563EB;
+}
+
+/* ── Dark (MASTER.md §1.2) ────────────────────────────────────────────────
+   Three theme states, per MASTER.md §5.5: an explicit choice stamps .dark or
+   .light; the default (no stamp) follows the OS. The :not(.light) guard is what
+   makes an explicit light choice beat a dark OS. */
+@media (prefers-color-scheme: dark) {
+  :root:not(.light) {
+    --ground:  #0A0A0A;
+    --surface: #141414;
+    --ink:     #EDEDED;
+    --dim:     #9CA3AF;
+    --line:    #666B75;  /* NOT #4A4A4A — that measured 2.23:1, failing WCAG 1.4.11. §2.2 */
+    --accent:  #6699FF;
+  }
+}
+:root.dark {
+  --ground:  #0A0A0A;
+  --surface: #141414;
+  --ink:     #EDEDED;
+  --dim:     #9CA3AF;
+  --line:    #666B75;
+  --accent:  #6699FF;
+}
+
+/* ── Spacing (MASTER.md §4) ───────────────────────────────────────────────── */
+:root {
+  --s-1: 4px;   --s-2: 8px;   --s-3: 12px;  --s-4: 16px;
+  --s-6: 24px;  --s-8: 32px;  --s-12: 48px; --s-16: 64px; --s-24: 96px;
+
+  /* --pad-cell is deliberately NOT fluid: every framed cell shares one padding
+     at every viewport. That constancy is what makes the structure read as a
+     grid rather than a stack of boxes. MASTER.md §4. */
+  --pad-cell:    24px;
+  --pad-section: clamp(48px, 7vw, 96px);
+  --gap-cell:    clamp(32px, 3.4vw, 40px);
+  --pad-page:    clamp(16px, 3vw, 34px);
+
+  --radius: 0rem;  /* brutalism → --border-radius: 0px. No exceptions. §5.1 */
+}
+
+/* ── Tailwind theme (Tailwind 4 is CSS-first — there is no tailwind.config.js) ── */
+@theme inline {
+  --color-ground:  var(--ground);
+  --color-surface: var(--surface);
+  --color-ink:     var(--ink);
+  --color-dim:     var(--dim);
+  --color-line:    var(--line);
+  --color-accent:  var(--accent);
+
+  --font-sans: var(--font-fira-sans), system-ui, -apple-system, sans-serif;
+  --font-mono: var(--font-fira-code), ui-monospace, "SF Mono", Menlo, monospace;
+
+  --spacing-cell:    var(--pad-cell);
+  --spacing-section: var(--pad-section);
+  --spacing-page:    var(--pad-page);
+
+  --radius-sm: 0rem; --radius-md: 0rem; --radius-lg: 0rem;
+  --radius-xl: 0rem; --radius-2xl: 0rem; --radius-3xl: 0rem; --radius-4xl: 0rem;
+
+  /* shadcn's semantic names mapped onto ours, so its components inherit the
+     H72 identity instead of shipping their own greys. */
+  --color-background:       var(--ground);
+  --color-foreground:       var(--ink);
+  --color-card:             var(--ground);
+  --color-card-foreground:  var(--ink);
+  --color-popover:          var(--ground);
+  --color-popover-foreground: var(--ink);
+  --color-primary:          var(--ink);
+  --color-primary-foreground: var(--ground);
+  --color-secondary:        var(--surface);
+  --color-secondary-foreground: var(--ink);
+  --color-muted:            var(--surface);
+  --color-muted-foreground: var(--dim);
+  --color-accent-foreground: var(--ground);
+  --color-border:           var(--line);
+  --color-input:            var(--line);
+  --color-ring:             var(--accent);
+}
+
+/* ── Base ─────────────────────────────────────────────────────────────────── */
+@layer base {
+  * {
+    border-color: var(--line);
+  }
+
+  body {
+    background: var(--ground);
+    color: var(--ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    transition: background-color 120ms linear, color 120ms linear;
+  }
+
+  /* Visible focus is mandatory — MASTER.md §2.4, carried from the brutalism
+     row's own Accessibility field. Never replace this with outline: none. */
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  /* MASTER.md §5.4 + UI_DESIGN §8: handled from the first animated element,
+     not retrofitted. */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}

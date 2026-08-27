@@ -1,0 +1,80 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# .gitignore — copied here at scaffold from the Brain's
+# Projects/(PROJECT TEMPLATE)/_gitignore-template
+#
+# POLICY (decided 2026-08-18): the remote carries the app and the design docs a
+# technical reader would want. It does NOT carry solo-work internals — the running
+# project log, internal planning docs, agent/skill tooling, or the project's
+# CLAUDE.md. Those stay local, in the Obsidian vault where the rest of the system
+# can see them.
+#
+# Decide this at commit 1. Adding a path here later does nothing to files git is
+# already tracking (that needs `git rm -r --cached`), and even then every old
+# version stays in history forever unless you rewrite it.
+# ─────────────────────────────────────────────────────────────────────────────
+
+# ── Solo-work internals — local only ────────────────────────────────────────
+# The append-only master log + raw run dumps. Internal narrative, disposable test
+# accounts, no external value.
+# ⚠ This is the file that carries project history across sessions. Ignoring it
+#   means git is no longer its backup — make sure the vault itself is backed up.
+notes-logs/
+
+# Internal planning docs: ROADMAP, IMPLEMENTATION_PLAN_<phase>, cost diagnoses.
+# The public design docs (ARCHITECTURE, TECH_STACK, DATABASE_SCHEMA, GLOSSARY,
+# DATA_HANDLING, UI_DESIGN, UI_WORKFLOW) stay in docs/ and stay tracked.
+docs/internal/
+
+# Project-scoped Claude instructions. Documents personal working style and process
+# history, not the codebase. AGENTS.md (if the stack generates one) stays tracked.
+CLAUDE.md
+
+# Agent/skill tooling. Mostly vendored third-party skill content — not ours to
+# redistribute, and irrelevant to anyone reading the code.
+# NOTE: .claude/skills/ contains symlinks INTO .agents/skills/. Ignore both or
+#       neither — ignoring one leaves dangling symlinks in a fresh clone.
+# NOTE: skills-lock.json (repo root) is NOT ignored — it's the reinstall manifest.
+.claude/
+.agents/
+
+# If this ever stops being solo work, un-ignoring shared project settings is a
+# one-line change:
+# !.claude/settings.json
+
+# ── Explicitly TRACKED (listed here so nobody "tidies" them away) ───────────
+# design-system/    ← the token spec globals.css implements; the *why* behind
+#                     every color and font, with provenance + contrast reasoning
+# docs/             ← public design docs (see docs/internal/ above for the split)
+# skills-lock.json  ← manifest for reinstalling the .agents/ skills
+# README.md         ← the repo's public face
+
+# ── Editor / OS ─────────────────────────────────────────────────────────────
+# Obsidian session state. Shared config is not worth the churn in a code repo.
+.obsidian
+.DS_Store
+.vscode/
+.idea/
+
+# ── Secrets ─────────────────────────────────────────────────────────────────
+.env*
+!.env.example
+*.pem
+
+# MCP server config. Holds the 21st.dev API key (21st_sk_...) in plaintext.
+# This repo is the source of a PUBLIC website — a leaked key here is a leaked key
+# forever, since old versions stay in history. Added 2026-08-27, BEFORE connecting
+# 21st.dev, per the roadmap's Phase 1 ordering.
+# Verify with: git grep 21st_sk_   (must return nothing)
+.mcp.json
+
+# ── Node / Next.js ──────────────────────────────────────────────────────────
+/node_modules
+/.next/
+/out/
+/build
+/dist
+*.tsbuildinfo
+next-env.d.ts
+npm-debug.log*
+yarn-error.log*
+.vercel
