@@ -43,10 +43,41 @@ export function FrameBody({ children, className }: { children: React.ReactNode; 
   return <div className={cn("flex min-h-0 flex-1 flex-col", className)}>{children}</div>;
 }
 
-/** The mono label strip that names each region. MASTER.md §3.2. */
-export function LabelStrip({ children }: { children: React.ReactNode }) {
+/**
+ * The mono label strip that names each region. MASTER.md §3.2.
+ *
+ * Draws its own BOTTOM rule only. The top edge normally belongs to whatever sits
+ * above: a strip that opens a column inherits the rule from the row above it, and
+ * drawing a second one there is the doubled 2px seam this file calls a bug.
+ *
+ * A strip that follows a CONTENT block has no rule above it and must ask for one
+ * with `topRule`. The condition is a fact about the sibling above, so it cannot be
+ * decided inside this component — but it is named here rather than left to a bare
+ * className at the render site, so the frame's rules stay in the frame.
+ *
+ * `topRule` is REQUIRED, deliberately. It has no default because both defaults are
+ * wrong: defaulting false lets a new strip silently ship with no rule (the original
+ * bug), and defaulting true ships a doubled 2px seam. CSS cannot derive it either —
+ * `:not(:first-child)` gets the nine in-column strips right and block 7 of the
+ * product detail page wrong, since that one is the first child of its own wrapper.
+ * So the author must look at what sits above and say which it is, and `tsc` makes
+ * them. A type, not a comment.
+ */
+export function LabelStrip({
+  children,
+  topRule,
+}: {
+  children: React.ReactNode;
+  /** True when the element above draws no bottom rule. See the note above. */
+  topRule: boolean;
+}) {
   return (
-    <div className="shrink-0 border-b border-line bg-surface px-cell py-1.5 font-mono text-[11px] uppercase tracking-[0.14em] text-dim">
+    <div
+      className={cn(
+        "shrink-0 border-b border-line bg-surface px-cell py-1.5 font-mono text-[11px] uppercase tracking-[0.14em] text-dim",
+        topRule && "border-t",
+      )}
+    >
       {children}
     </div>
   );

@@ -15,7 +15,7 @@ export default function ContactPage() {
       <Frame>
         <SiteHeader />
         <FrameBody>
-          <LabelStrip>Contact</LabelStrip>
+          <LabelStrip topRule={false}>Contact</LabelStrip>
           <div className="grid min-h-0 flex-1 grid-cols-1 xl:grid-cols-[minmax(0,1fr)_minmax(280px,0.62fr)]">
             <div className="flex flex-col items-center justify-center gap-4 p-cell text-center">
               <ContactAddress className="font-mono text-[clamp(1.4rem,3vw,2.4rem)] text-accent transition-opacity hover:opacity-80" />

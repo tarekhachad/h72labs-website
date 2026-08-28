@@ -313,6 +313,28 @@ viewport; that constancy is what makes the structure read as a grid rather than 
   doubled 2px seams — a doubled seam is a bug, not a style.
 - No `box-shadow` anywhere. Depth is not part of this direction.
 
+> **The collapse idiom above is NOT universal — `LabelStrip` is the documented exception**
+> (2026-08-28). A label strip draws its own bottom rule only; its top edge normally belongs to
+> whatever sits above it. Two strips shipped in Phase 2 with **no** top rule because they followed
+> a content block rather than opening a column, which draws nothing above them.
+>
+> The obvious fix — always draw `border-t` and collapse it with `-mt-px` — was **rejected, and not
+> on taste.** The detail page's `What it is` strip is the literal first child of an
+> `overflow-y-auto` column, so a negative top margin pulls it above that container's scroll origin:
+> a 1px clip inside a scroller, which is exactly the "content present but not visible" class this
+> section's verification note was already burned by three times. It is also only safe while every
+> future top-neighbour carries a `--line` edge — an invariant that breaks silently.
+>
+> CSS cannot derive the condition either: `:not(:first-child)` is right for the nine in-column
+> strips and **wrong for block 7** of the product detail page, which is the first child of its own
+> wrapper and still needs a rule.
+>
+> So `LabelStrip` takes a **required** `topRule` boolean — required, because defaulting false
+> reships the original bug silently and defaulting true ships a doubled seam. `tsc` rejects a call
+> site that omits it (verified: `TS2741`). The reasoning lives in `src/components/frame.tsx`'s
+> header comment; this pointer exists so a reader who consults only `MASTER.md` doesn't
+> reintroduce the `-mt-px` approach.
+
 ### 5.2 The product card — **NO METRIC SLOT**
 
 **Non-negotiable, from `(C) UI_DESIGN.md` §3.1 and `CLAUDE.md`.** Walter Labs' cards earn

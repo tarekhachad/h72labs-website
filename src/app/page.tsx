@@ -28,7 +28,7 @@ export default function Home() {
               layout out. This has bitten this project three times. */}
           <div className="grid min-h-0 flex-1 grid-cols-1 xl:grid-cols-[minmax(0,1.85fr)_minmax(0,1fr)]">
             <div className="flex min-h-0 flex-col border-b border-line xl:border-b-0 xl:border-r">
-              <LabelStrip>01 — Product</LabelStrip>
+              <LabelStrip topRule={false}>01 — Product</LabelStrip>
               <div className="grid min-h-0 flex-1 grid-cols-[38px_minmax(0,1fr)] md:grid-cols-[52px_minmax(0,1fr)]">
                 <div className="flex justify-center border-r border-line pt-cell font-mono text-[13px] font-medium tabular-nums text-accent">
                   01
@@ -51,7 +51,7 @@ export default function Home() {
             </div>
 
             <div className="flex min-h-0 flex-col">
-              <LabelStrip>Founder</LabelStrip>
+              <LabelStrip topRule={false}>Founder</LabelStrip>
               {/* The only place on the site with a human voice rather than an
                   instrument's. Keep it short so the contrast stays sharp. §5.1.4 */}
               <div className="flex min-h-0 flex-1 flex-col gap-3.5 overflow-y-auto p-cell">
@@ -67,7 +67,7 @@ export default function Home() {
                 </div>
               </div>
 
-              <LabelStrip>Contact</LabelStrip>
+              <LabelStrip topRule>Contact</LabelStrip>
               <div className="flex shrink-0 flex-col items-center justify-center p-cell text-center">
                 <ContactAddress className="break-all font-mono text-[clamp(0.95rem,1.15vw,1.2rem)] text-accent transition-opacity hover:opacity-80" />
               </div>

@@ -16,7 +16,7 @@ export default function NotFound() {
       <Frame>
         <SiteHeader />
         <FrameBody>
-          <LabelStrip>404</LabelStrip>
+          <LabelStrip topRule={false}>404</LabelStrip>
           <div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-4 p-cell text-center">
             <h1 className="text-[clamp(1.4rem,3vw,2.2rem)] font-semibold tracking-[-0.02em]">
               That page doesn&apos;t exist.

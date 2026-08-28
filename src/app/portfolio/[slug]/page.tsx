@@ -52,11 +52,11 @@ export default async function ProductDetailPage({ params }: PageProps<"/portfoli
                 so the longer block scrolled while the shorter one sat on unused
                 space. Sharing a single pool lets them size to their actual copy. */}
             <div className="flex min-h-0 flex-col overflow-y-auto border-b border-line xl:border-b-0 xl:border-r">
-              <LabelStrip>What it is</LabelStrip>
+              <LabelStrip topRule={false}>What it is</LabelStrip>
               <div className="shrink-0 px-cell py-3.5">
                 <p className="text-[0.9rem] leading-[1.5] text-dim">{product.whatItIs}</p>
               </div>
-              <LabelStrip>How it&apos;s used</LabelStrip>
+              <LabelStrip topRule>How it&apos;s used</LabelStrip>
               <div className="shrink-0 px-cell py-3.5">
                 <p className="text-[0.9rem] leading-[1.5] text-dim">{product.howItsUsed}</p>
               </div>
@@ -65,7 +65,7 @@ export default async function ProductDetailPage({ params }: PageProps<"/portfoli
             {/* 5 — stack. This block is the page's proof and the reason the
                 Technical register was chosen (UI_DESIGN §5.2). */}
             <div className="flex min-h-0 flex-col border-b border-line xl:border-b-0 xl:border-r">
-              <LabelStrip>Stack &amp; architecture</LabelStrip>
+              <LabelStrip topRule={false}>Stack &amp; architecture</LabelStrip>
               <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto px-cell py-3.5">
                 <p className="font-mono text-[0.8rem] leading-[1.55]">{product.stack.pipeline}</p>
                 {product.stack.details.map((para, i) => (
@@ -79,7 +79,7 @@ export default async function ProductDetailPage({ params }: PageProps<"/portfoli
             {/* 6 — honest limits. The framing line is bound by the honesty rule;
                 see the note on `limitsFraming` in content/products.ts. */}
             <div className="flex min-h-0 flex-col">
-              <LabelStrip>What it doesn&apos;t do yet</LabelStrip>
+              <LabelStrip topRule={false}>What it doesn&apos;t do yet</LabelStrip>
               <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto px-cell py-3.5">
                 <p className="border-l-2 border-accent pl-3 text-[0.87rem] leading-[1.5]">
                   {product.limitsFraming}
@@ -109,8 +109,11 @@ export default async function ProductDetailPage({ params }: PageProps<"/portfoli
           {/* 7 — origin. Rendered only when it exists; an empty block would be the
               ghost cell §5.3 forbids, and an invented one a fabrication. */}
           {product.origin && (
-            <div className="shrink-0 border-t border-line">
-              <LabelStrip>Where the idea came from</LabelStrip>
+            <div className="shrink-0">
+              {/* topRule, not a border-t on this wrapper: block 4 above draws no
+                  bottom rule, so the edge has to come from somewhere — and the
+                  strip owning it is the one mechanism, per LabelStrip's contract. */}
+              <LabelStrip topRule>Where the idea came from</LabelStrip>
               <div className="p-cell">
                 <p className="max-w-[65ch] text-[0.9rem] leading-relaxed text-dim">{product.origin}</p>
               </div>
