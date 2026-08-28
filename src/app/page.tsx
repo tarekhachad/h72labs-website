@@ -9,6 +9,19 @@ import { SiteHeader, SiteFooter, ContactAddress, Portrait } from "@/components/s
 export default function Home() {
   const featured = products[0];
 
+  // Guard n=0, mirroring ProductCarousel. `products` is a hand-maintained array
+  // and the honesty rule requires editing it whenever a status changes, so
+  // emptying it is a reachable state — and every field below is dereferenced
+  // unconditionally. Returning null is the honest failure: a landing page with
+  // an empty product slot would be the ghost cell UI_DESIGN §5.3 forbids.
+  //
+  // NOT the same shape as ProductCarousel's guard, deliberately: that one blanks
+  // only the carousel panel, leaving the portfolio page's header and footer in
+  // place. This blanks the whole landing page, header included, because the
+  // thesis block is the one thing that must never appear beside an absent
+  // product. Both are unreachable while `products` stays populated.
+  if (!featured) return null;
+
   return (
     <PageShell>
       <Frame>

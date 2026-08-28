@@ -62,7 +62,15 @@ export function ThemeToggle() {
       aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} theme`}
       className="border border-line px-2.5 py-1 font-mono text-[11px] text-dim transition-colors hover:text-ink"
     >
-      <span suppressHydrationWarning>{theme === "dark" ? "Light" : "Dark"}</span>
+      {/* The label swaps between a 4- and a 5-character word. In a monospace face
+          every glyph has the same advance, so without a reserved width the button
+          grows by exactly one character on toggle and drags the whole right-aligned
+          header cluster sideways — measured at 48.41px -> 55.00px, a 6.59px shift.
+          `ch` is the right unit precisely because the font is mono: 5ch is the
+          longer label, whatever the size ends up being. */}
+      <span suppressHydrationWarning className="inline-block w-[5ch] text-center">
+        {theme === "dark" ? "Light" : "Dark"}
+      </span>
     </button>
   );
 }

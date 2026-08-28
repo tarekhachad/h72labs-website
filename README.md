@@ -22,9 +22,9 @@ Built by [H72 Labs](https://github.com/tarekhachad) — the brand name for Hacha
 |---|---|---|
 | Framework | Next.js (App Router) | Static generation — pages are built to HTML at deploy time, so there is no server to run |
 | Styling | Tailwind 4 | CSS-first: design tokens live in a `@theme` block in `globals.css`, not `tailwind.config.js` |
-| Primitives | shadcn/ui on Base UI | Taken for accessible behavior — focus trapping, ARIA, keyboard handling. Appearance is replaced entirely with this project's tokens |
-| Icons | `lucide-react` | shadcn's standard pairing |
-| Motion | Motion | Used lightly — motion serves orientation and feedback, not decoration |
+| Primitives | None — hand-built | shadcn/ui on Base UI was scaffolded in and then removed: the site's interactive surface is a theme toggle, two nav links and a carousel control, none of which needs focus trapping or ARIA machinery worth importing a library for. Revisit if a real dialog, menu or form appears |
+| Icons | None | No icon set ships. The one glyph on the site is a typed arrow |
+| Motion | Motion | Used once — a directional slide on the portfolio carousel. Motion serves orientation and feedback, never decoration |
 | Hosting | Vercel | Deploys from a git push; custom domain is a settings change |
 | Contact | `mailto:` on a plain text address | No backend, no third-party form service, nothing that can fail silently |
 
@@ -62,8 +62,9 @@ component rules, with provenance and accessibility reasoning behind each value.
 
 ## Status
 
-In build. The visual identity is decided and the token spec is written; the app is scaffolded
-and renders a themed shell. Page structure is next. Not yet deployed.
+In build. All five pages are built and styled against the token spec, in both light and dark
+themes, and the site has been through an accessibility and layout audit. **Not yet deployed** —
+there is no public URL yet, and deployment is the next step.
 
 Note on the products listed on the site: they are labeled **in development** because that is what
 they are. As of 2026-08-27 the Personalized News Aggregator runs locally only — it is not deployed

@@ -151,6 +151,12 @@ shadcn/ui via the **21st MCP** if it's live in the session, otherwise the standa
 CLI for the same end components. Pick the icon set here too (shadcn pairs with
 `lucide-react` by default).
 
+**First decide whether this step applies at all.** On h72labs-website it did not: the site's whole
+interactive surface is a theme toggle, two nav links and a carousel control, so the primitives that
+were installed at Phase 1 were still unimported at Phase 4 and got removed. The value below is
+*behavior* — focus trapping, ARIA, keyboard handling — which only exists to be bought when there is
+a dialog, menu, select, combobox or form to buy it for. No such surface, no library.
+
 **Pull for behavior, not appearance.** Accessibility, focus trapping, keyboard handling and
 ARIA are the genuinely hard parts and the real reason to use shadcn/Radix at all. The look is
 replaced entirely with step 3's tokens.
@@ -309,3 +315,11 @@ Settled 2026-08-26. Committing to the 21st MCP commits this stack — it emits n
 | Motion | Motion (Framer Motion) |
 | Hosting | Vercel |
 | Contact | `mailto:` or a hosted form service — decided in sitting 1, no custom backend for v1 |
+
+> **What this project actually shipped (2026-08-28).** The table above is what committing to the
+> 21st MCP *implies*; it is not a description of h72labs-website's final stack. The MCP was never
+> connected, and the Phase 4 audit removed the primitives library and icon set entirely — this site
+> has no dialog, menu, select or form, so it had primitives installed and never imported. **Step 4
+> below is still correct as method**; it simply did not apply here. See `(C) TECH_STACK.md` for
+> what shipped. The `shadcn` CLI and `components.json` are kept so step 4 is one command away the
+> moment a real component surface appears.
