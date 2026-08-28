@@ -64,13 +64,14 @@ component rules, with provenance and accessibility reasoning behind each value.
 
 ## Status
 
-In build. All five pages are built and styled against the token spec, in both light and dark
-themes, and the site has been through an accessibility and layout audit. **Not yet deployed** —
-there is no public URL yet, and deployment is the next step.
+**Live at <https://h72labs.com>** (deployed 2026-08-28). All five pages are built and styled
+against the token spec in both light and dark themes, and the site has been through an
+accessibility and layout audit.
 
 Note on the products listed on the site: they are labeled **in development** because that is what
-they are. As of 2026-08-27 the Personalized News Aggregator runs locally only — it is not deployed
-and has no external users.
+they are. As of 2026-08-28 the Personalized News Aggregator runs locally only — it is not deployed
+and has no external users. **This site being live does not change that**, and the two must not be
+conflated: the studio's front door is public; the product behind it is not.
 
 ## License
 
