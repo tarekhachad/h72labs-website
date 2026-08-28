@@ -41,19 +41,25 @@ export default function Home() {
               layout out. This has bitten this project three times. */}
           <div className="grid min-h-0 flex-1 grid-cols-1 xl:grid-cols-[minmax(0,1.85fr)_minmax(0,1fr)]">
             <div className="flex min-h-0 flex-col border-b border-line xl:border-b-0 xl:border-r">
-              <LabelStrip topRule={false}>01 — Product</LabelStrip>
+              <LabelStrip topRule={false} as="h2">01 — Product</LabelStrip>
               <div className="grid min-h-0 flex-1 grid-cols-[38px_minmax(0,1fr)] md:grid-cols-[52px_minmax(0,1fr)]">
-                <div className="flex justify-center border-r border-line pt-cell font-mono text-[13px] font-medium tabular-nums text-accent">
+                {/* Decorative: the heading beside it already says "01 — Product",
+                    so without aria-hidden a screen reader announces the numeral
+                    twice. Same reasoning as the carousel's position indicator. */}
+                <div
+                  aria-hidden="true"
+                  className="flex justify-center border-r border-line pt-cell font-mono text-[13px] font-medium tabular-nums text-accent"
+                >
                   01
                 </div>
                 <div className="grid min-h-0 gap-cell p-cell md:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]">
                   <ShotFrame className="aspect-[16/10] md:aspect-auto" />
                   <div className="flex min-h-0 flex-col">
-                    <h2 className="text-[1.15rem] font-semibold tracking-[-0.01em]">
+                    <h3 className="text-[1.15rem] font-semibold tracking-[-0.01em]">
                       <Link href={`/portfolio/${featured.slug}`} className="transition-colors hover:text-accent">
                         {featured.name}
                       </Link>
-                    </h2>
+                    </h3>
                     <p className="mt-2.5 leading-relaxed text-dim">{featured.summary}</p>
                     <div className="mt-6 md:mt-auto md:pt-6">
                       <StatusLine status={featured.status} />
@@ -64,7 +70,7 @@ export default function Home() {
             </div>
 
             <div className="flex min-h-0 flex-col">
-              <LabelStrip topRule={false}>Founder</LabelStrip>
+              <LabelStrip topRule={false} as="h2">Founder</LabelStrip>
               {/* The only place on the site with a human voice rather than an
                   instrument's. Keep it short so the contrast stays sharp. §5.1.4 */}
               <div className="flex min-h-0 flex-1 flex-col gap-3.5 overflow-y-auto p-cell">
@@ -80,7 +86,7 @@ export default function Home() {
                 </div>
               </div>
 
-              <LabelStrip topRule>Contact</LabelStrip>
+              <LabelStrip topRule as="h2">Contact</LabelStrip>
               <div className="flex shrink-0 flex-col items-center justify-center p-cell text-center">
                 <ContactAddress className="break-all font-mono text-[clamp(0.95rem,1.15vw,1.2rem)] text-accent transition-opacity hover:opacity-80" />
               </div>

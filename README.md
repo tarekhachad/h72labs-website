@@ -32,8 +32,10 @@ Full reasoning, and what is deliberately absent, in [`docs/(C) TECH_STACK.md`](d
 
 ## Running it locally
 
-Requires Node 20 or newer (built on 24.x). No database, no API keys, no `.env` file — the
-site is fully static.
+Requires Node 20 or newer (built on 24.x). No database, no API keys, no secrets — the site is
+fully static. There is exactly one optional environment variable, `NEXT_PUBLIC_SITE_URL`, which
+overrides the origin used for canonical and link-preview URLs; see `.env.example`. It is unset in
+production on purpose.
 
 ```bash
 npm install

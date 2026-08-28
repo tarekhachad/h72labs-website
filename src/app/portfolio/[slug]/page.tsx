@@ -3,6 +3,13 @@ import { notFound } from "next/navigation";
 import { products, getProduct } from "@/content/products";
 import { PageShell, Frame, FrameBody, LabelStrip, ShotFrame, StatusLine } from "@/components/frame";
 import { SiteHeader, SiteFooter } from "@/components/site-chrome";
+import { pageMetadata } from "@/lib/site";
+
+// Every product is known at build time, so there is nothing to resolve on
+// demand. Without this, Next leaves dynamicParams at its default `true` and an
+// unlisted slug is rendered at request time — which still 404s correctly, but
+// makes the README's "no server to run" claim not quite true. Now it is.
+export const dynamicParams = false;
 
 export function generateStaticParams() {
   return products.map((p) => ({ slug: p.slug }));
@@ -13,8 +20,29 @@ export async function generateMetadata({
 }: PageProps<"/portfolio/[slug]">): Promise<Metadata> {
   const { slug } = await params;
   const product = getProduct(slug);
-  if (!product) return { title: "Not found — H72 Labs" };
-  return { title: `${product.name} — H72 Labs`, description: product.summary };
+  if (!product) {
+    // Unreachable in output, and worth saying exactly why, because the reason
+    // changed. It is NOT that notFound() below discards this — that was true
+    // before `dynamicParams = false` was set above. Now an unlisted slug is
+    // rejected at the routing layer, ahead of this function mattering at all,
+    // and the branded 404 comes wholly from not-found.tsx.
+    //
+    // MEASURED, not reasoned: returning a distinctive title here and rebuilding,
+    // /portfolio/typo served "Not found — H72 Labs" with zero occurrences of the
+    // probe string. Kept only so the branch is type-complete. Do not elaborate
+    // it — nothing written here reaches a response.
+    return pageMetadata({
+      title: "Not found",
+      description: "That page doesn't exist.",
+      path: "/404",
+      noIndex: true,
+    });
+  }
+  return pageMetadata({
+    title: product.name,
+    description: product.summary,
+    path: `/portfolio/${product.slug}`,
+  });
 }
 
 // UI_DESIGN §5.2 — the seven blocks, laid out as a three-column datasheet
@@ -52,11 +80,11 @@ export default async function ProductDetailPage({ params }: PageProps<"/portfoli
                 so the longer block scrolled while the shorter one sat on unused
                 space. Sharing a single pool lets them size to their actual copy. */}
             <div className="flex min-h-0 flex-col overflow-y-auto border-b border-line xl:border-b-0 xl:border-r">
-              <LabelStrip topRule={false}>What it is</LabelStrip>
+              <LabelStrip topRule={false} as="h2">What it is</LabelStrip>
               <div className="shrink-0 px-cell py-3.5">
                 <p className="text-[0.9rem] leading-[1.5] text-dim">{product.whatItIs}</p>
               </div>
-              <LabelStrip topRule>How it&apos;s used</LabelStrip>
+              <LabelStrip topRule as="h2">How it&apos;s used</LabelStrip>
               <div className="shrink-0 px-cell py-3.5">
                 <p className="text-[0.9rem] leading-[1.5] text-dim">{product.howItsUsed}</p>
               </div>
@@ -65,7 +93,7 @@ export default async function ProductDetailPage({ params }: PageProps<"/portfoli
             {/* 5 — stack. This block is the page's proof and the reason the
                 Technical register was chosen (UI_DESIGN §5.2). */}
             <div className="flex min-h-0 flex-col border-b border-line xl:border-b-0 xl:border-r">
-              <LabelStrip topRule={false}>Stack &amp; architecture</LabelStrip>
+              <LabelStrip topRule={false} as="h2">Stack &amp; architecture</LabelStrip>
               <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto px-cell py-3.5">
                 <p className="font-mono text-[0.8rem] leading-[1.55]">{product.stack.pipeline}</p>
                 {product.stack.details.map((para, i) => (
@@ -79,7 +107,7 @@ export default async function ProductDetailPage({ params }: PageProps<"/portfoli
             {/* 6 — honest limits. The framing line is bound by the honesty rule;
                 see the note on `limitsFraming` in content/products.ts. */}
             <div className="flex min-h-0 flex-col">
-              <LabelStrip topRule={false}>What it doesn&apos;t do yet</LabelStrip>
+              <LabelStrip topRule={false} as="h2">What it doesn&apos;t do yet</LabelStrip>
               <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto px-cell py-3.5">
                 <p className="border-l-2 border-accent pl-3 text-[0.87rem] leading-[1.5]">
                   {product.limitsFraming}
@@ -113,7 +141,7 @@ export default async function ProductDetailPage({ params }: PageProps<"/portfoli
               {/* topRule, not a border-t on this wrapper: block 4 above draws no
                   bottom rule, so the edge has to come from somewhere — and the
                   strip owning it is the one mechanism, per LabelStrip's contract. */}
-              <LabelStrip topRule>Where the idea came from</LabelStrip>
+              <LabelStrip topRule as="h2">Where the idea came from</LabelStrip>
               <div className="p-cell">
                 <p className="max-w-[65ch] text-[0.9rem] leading-relaxed text-dim">{product.origin}</p>
               </div>

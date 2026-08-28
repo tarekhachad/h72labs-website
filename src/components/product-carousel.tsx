@@ -109,10 +109,16 @@ export function ProductCarousel({ products }: { products: Product[] }) {
   return (
     <div className="flex min-h-0 flex-1 flex-col">
       <div className="flex h-11 shrink-0 items-center justify-between border-b border-line bg-surface px-cell">
-        {/* The numeral is a position indicator here, so it encodes something true. */}
-        <span className="font-mono text-[11px] uppercase tracking-[0.14em] tabular-nums text-dim">
-          Portfolio — {pos}
-        </span>
+        {/* The numeral is a position indicator here, so it encodes something true.
+            This bar is also the page's h1: /portfolio previously had no heading at
+            any level, which leaves a screen-reader user with nothing to orient by.
+            The position is aria-hidden inside it so the heading stays the stable
+            word "Portfolio" rather than changing every time you advance — the live
+            region below already announces which slide you are on. `font-normal`
+            because h1 would otherwise inherit bold and break the mono label look. */}
+        <h1 className="font-mono text-[11px] font-normal uppercase tracking-[0.14em] tabular-nums text-dim">
+          Portfolio<span aria-hidden="true"> — {pos}</span>
+        </h1>
         {many && (
           <div className="flex">
             <button

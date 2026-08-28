@@ -2,10 +2,14 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { PageShell, Frame, FrameBody, LabelStrip } from "@/components/frame";
 import { SiteHeader, SiteFooter } from "@/components/site-chrome";
+import { pageMetadata } from "@/lib/site";
 
-export const metadata: Metadata = {
-  title: "Not found — H72 Labs",
-};
+export const metadata: Metadata = pageMetadata({
+  title: "Not found",
+  description: "That page doesn't exist.",
+  path: "/404",
+  noIndex: true,
+});
 
 // Next serves its own unstyled fallback unless this file exists — plain
 // black-on-white, no header, no theme, wrong <title>. The ship bar says "no dead

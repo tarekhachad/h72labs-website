@@ -19,10 +19,16 @@ const firaCode = Fira_Code({
   display: "swap",
 });
 
-export const metadata: Metadata = {
-  title: "H72 Labs",
-  description: "H72 Labs builds AI tools that turn noisy information into clarity.",
-};
+import { rootMetadata } from "@/lib/site";
+
+// Link previews matter more here than on most sites: the way anyone arrives is
+// Tarek pasting the URL into an application form, a LinkedIn message or an email
+// to a recruiter — so the card is read BEFORE the site is. Without these tags the
+// paste renders as a bare URL or an empty grey box.
+//
+// Everything is assembled in lib/site.ts so the homepage cannot drift from the
+// rest of the site. It did, twice: read the note there before changing any of it.
+export const metadata: Metadata = rootMetadata();
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (

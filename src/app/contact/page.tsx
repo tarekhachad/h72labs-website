@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
 import { PageShell, Frame, FrameBody, LabelStrip } from "@/components/frame";
 import { SiteHeader, SiteFooter, ContactAddress, Portrait } from "@/components/site-chrome";
+import { pageMetadata } from "@/lib/site";
 
-export const metadata: Metadata = {
-  title: "Contact — H72 Labs",
-  description: "Get in touch with H72 Labs.",
-};
+export const metadata: Metadata = pageMetadata({
+  title: "Contact",
+  description: "One person reads this address. Expect a reply from Tarek, not a ticket number.",
+  path: "/contact",
+});
 
 // UI_DESIGN §5.4: the address, and nothing else. No form, no fields,
 // nothing that can fail silently.
@@ -15,7 +17,7 @@ export default function ContactPage() {
       <Frame>
         <SiteHeader />
         <FrameBody>
-          <LabelStrip topRule={false}>Contact</LabelStrip>
+          <LabelStrip topRule={false} as="h1">Contact</LabelStrip>
           <div className="grid min-h-0 flex-1 grid-cols-1 xl:grid-cols-[minmax(0,1fr)_minmax(280px,0.62fr)]">
             <div className="flex flex-col items-center justify-center gap-4 p-cell text-center">
               <ContactAddress className="font-mono text-[clamp(1.4rem,3vw,2.4rem)] text-accent transition-opacity hover:opacity-80" />

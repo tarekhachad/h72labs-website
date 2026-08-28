@@ -66,20 +66,33 @@ export function FrameBody({ children, className }: { children: React.ReactNode; 
 export function LabelStrip({
   children,
   topRule,
+  as: Tag = "div",
 }: {
   children: React.ReactNode;
   /** True when the element above draws no bottom rule. See the note above. */
   topRule: boolean;
+  /**
+   * The element to render. Defaults to `div` — a strip is only a heading when it
+   * actually names a section of the document, and saying so falsely is worse than
+   * staying silent.
+   *
+   * Why this exists: a screen-reader user navigates by jumping between headings,
+   * the way a sighted reader skims by scanning them. Every strip rendered as a
+   * `div` is invisible to that, so the page reads as one undifferentiated block.
+   * Pass the level that is true for the page — never one that merely looks right,
+   * and never skip a level, because the outline is the navigation.
+   */
+  as?: "div" | "h1" | "h2" | "h3";
 }) {
   return (
-    <div
+    <Tag
       className={cn(
-        "shrink-0 border-b border-line bg-surface px-cell py-1.5 font-mono text-[11px] uppercase tracking-[0.14em] text-dim",
+        "shrink-0 border-b border-line bg-surface px-cell py-1.5 font-mono text-[11px] font-normal uppercase tracking-[0.14em] text-dim",
         topRule && "border-t",
       )}
     >
       {children}
-    </div>
+    </Tag>
   );
 }
 
