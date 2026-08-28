@@ -28,7 +28,17 @@ export type Product = {
    * `pipeline` is the one-line flow, set in mono; `details` are prose.
    */
   stack: { pipeline: string; details: string[] };
-  /** Detail page, block 6 — stated flatly, no softening. */
+  /**
+   * Detail page, block 6 — one line framing the list, then the list itself,
+   * both stated flatly with no softening.
+   *
+   * THE HONESTY RULE BINDS THIS FIELD. As of 2026-08-27 PNA v1 closed on
+   * 2026-08-15 and Roadmap V2 has not started, so this may NOT claim the product
+   * is actively being worked on — nobody is working on it today. "Still in
+   * development" is true because it matches the status line already carried
+   * elsewhere on the site; "actively being worked on" would not be.
+   */
+  limitsFraming: string;
   limits: string[];
   /**
    * Detail page, block 7. Null until Tarek writes it — the block does not render
@@ -71,9 +81,9 @@ export const products: Product[] = [
       details: [
         "The tiering is the design, not an optimization bolted on afterwards. Embeddings run locally and cost nothing, so clustering several hundred articles is free. Haiku is cheap enough to ask “is this worth writing about?” of every cluster. Sonnet only ever sees the clusters that survived triage.",
         "Next.js, with Supabase for Postgres and managed authentication.",
-        "A late pass cut the cost of one digest from $1.944 to $0.399 — 79.5% — by taking Claude calls from 930 down to 107. The target was $0.30. It missed, and $0.399 is the real number.",
       ],
     },
+    limitsFraming: "Still in development — these are the known gaps, not hidden ones.",
     limits: [
       "It is not deployed. It runs locally, for one person. There are no users.",
       "“Today” is a UTC day, not yours. Generate a digest on an Atlanta evening and it can reclassify itself as yesterday before you have read it.",

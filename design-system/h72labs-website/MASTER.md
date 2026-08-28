@@ -280,7 +280,29 @@ viewport; that constancy is what makes the structure read as a grid rather than 
 
 ### 5.1 The frame
 
-- Outer wrapper: `1px solid var(--line)`, `max-width: 1120px`, centred.
+- Outer wrapper: `1px solid var(--line)`. **The frame fills the padded area** — gutter is
+  `--pad-page` (`clamp(16px, 3vw, 34px)`), capped at `--frame-max: 1800px` for ultra-wide displays.
+  At 1512px that is a 1444px frame with 34px margins. *(Changed 2026-08-27 from a fixed
+  `max-width: 1120px`, which left 189px of empty gutter each side — 26% of the screen.)*
+- **The frame is exactly one viewport tall at ≥1280px**, so no page scrolls on desktop. Below
+  1280px it reverts to natural document height and the page scrolls normally. Use `dvh`, never
+  `vh` — `vh` overshoots on mobile Safari by the toolbar height and produces a page that scrolls
+  by exactly that much.
+
+> **Why 1280 and not 1024** (changed 2026-08-27 after measurement): at 1024–1279 the one-screen
+> layout produced three narrow columns whose panels scrolled internally. Content was reachable but
+> the experience was worse than a page that simply scrolls, so tablets and small windows now behave
+> like mobile. **Measured boundary: the detail page fits completely at ≥1280×800.** On a 720px-tall
+> desktop viewport one panel scrolls ~25px with a visible scrollbar — content reachable, nothing
+> lost. That is the documented edge, not a defect to discover later.
+
+> **Verification note, learned the hard way.** "No page scroll" and "no content hidden" are
+> different claims and this project proved it three times: `getBoundingClientRect` reports layout
+> boxes for content already clipped; `scrollHeight <= clientHeight` passes *because*
+> `overflow:hidden` discards content; and a measurement against a dead server reports zero of
+> everything. **Any height check must (a) assert the page actually loaded, (b) await
+> `document.fonts.ready` — web-font swap changes text height — and (c) test panels, not just the
+> document.**
 - Every region separated by `1px solid var(--line)`. **`border-radius: 0` everywhere, no exceptions**
   (`brutalism` → `--border-radius: 0px`). *Implemented as `--radius: 0rem` in `globals.css` — the
   shadcn/Tailwind convention name, numerically identical. The whole `--radius-*` scale derives from
@@ -316,11 +338,18 @@ not look broken.
 ### 5.3 The 1..n requirement
 
 Brief §5.3, a build constraint rather than a preference. The portfolio renders **from the product
-list** and adapts by count. In Frame the mechanism is a **row-per-product structure inside one
-frame** — each product is a bordered row with its own index cell.
+list** and adapts by count.
 
-- **n = 1** → the single row occupies the full frame width and reads as deliberate.
-- **n ≥ 2** → rows stack. Nothing is re-cut, no component replaced, no layout swapped.
+**Mechanism changed 2026-08-27: a carousel, one product at a time.** With the frame fixed to one
+viewport there is no vertical scroll, so the previous row-per-product stack had nowhere to go.
+
+- **n = 1** → the single product fills the frame. **No arrows render** — disabled arrows would be
+  chrome implying content that does not exist, the same failure as a "coming soon" cell.
+- **n ≥ 2** → arrows appear and slides advance, wrapping at both ends; Left/Right arrow keys step.
+  The numeral becomes a position indicator (`01 / 03`), which under a carousel encodes something
+  true rather than decorating.
+- Nothing is re-cut and no component is replaced when a product is added. The requirement is
+  unchanged; only "rows stack" became "slides advance".
 
 **Never render a placeholder or "coming soon" row.** An empty cell is the clearest possible signal
 that the studio has nothing yet.
@@ -352,7 +381,9 @@ reads as broken rather than disciplined.
 
 Committed scope, not a nice-to-have (brief §7, Tarek's call against the recommendation).
 
-- Sits in the footer, right, in a bordered mono cell.
+- **Sits in the header, right, beside the nav**, in a bordered mono cell — visible on load without
+  scrolling. *(Moved from the footer 2026-08-27, Tarek's call.)* The footer carries
+  `Hachad Solutions LLC` alone.
 - Persists to `localStorage`; wrap every read and write in `try`/`catch` and render correctly with no
   stored value.
 - Default follows `prefers-color-scheme`.
@@ -360,6 +391,29 @@ Committed scope, not a nice-to-have (brief §7, Tarek's call against the recomme
 - **Screenshot treatment must be decided before capture, not after** — brief §7 names this as the
   cost most easily discovered too late. Frame's answer: every screenshot sits inside a
   `1px solid var(--line)` box, which gives it a defined edge on either ground.
+- **The founder portrait** (`public/founder.png`, added 2026-08-27) passes the same test by luck
+  worth recording: it is pixel art with a **mid-tone slate background that sits between both
+  grounds**, so it reads correctly on `#FFFFFF` and on `#0A0A0A` without a cutout or a per-theme
+  variant. Framed in 1px `--line` like a screenshot. **`image-rendering: pixelated` is mandatory**,
+  and it is served `unoptimized` — Next's image optimizer would resample and soften the blocks,
+  which are the whole character of the image. 11 KB, 3-colour palette; there is nothing to optimize.
+- **Portrait crop, contact page — the cropped axis DEPENDS ON THE BREAKPOINT.**
+  `object-fit: cover` always crops whichever axis the container is longer in, and the source is
+  square (1630×1630), so the container's shape decides everything.
+  - **At `xl` (≥1280px)** the column is taller than wide → the **width** is cropped: 0% vertically,
+    and horizontally 12% at 1512×820, 23% at 1920×1080, 45% at 2560×1440. `object-center` is
+    correct because the face is centred in the source; a vertical bias would be inert.
+  - **Below `xl`** the block is constrained to a **centred square** (`aspect-square`,
+    `max-w-[340px]`), so it matches the source's shape and **nothing is cropped on either axis**.
+  *This was wrong three times before it was right, and the sequence is worth keeping:* a comment
+  claimed a 40% vertical bias that was never implemented; the measurement script that "confirmed"
+  the reasoning had its **axis logic inverted**; and once the axis was finally correct, the
+  below-`xl` case was still broken — the block was `w-full max-h-[60vh]`, measuring 1194×480 at
+  1279×800 and cropping **60% of the height**, cutting off the top of the head and the chin. It
+  rendered as a horizontal band, not a portrait.
+  **Two rules earned here:** compute the cropped axis from natural-vs-rendered dimensions, never
+  infer it from the container's apparent shape; and **check both sides of every breakpoint** —
+  a screenshot showing headroom at one width says nothing about the other.
 
 ---
 

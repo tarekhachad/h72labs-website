@@ -79,6 +79,11 @@
   --pad-page:    clamp(16px, 3vw, 34px);
 
   --radius: 0rem;  /* brutalism → --border-radius: 0px. No exceptions. §5.1 */
+
+  /* The frame fills the padded area rather than sitting at a fixed 1120px.
+     At 1512px that is a 1444px frame with 34px gutters, where it used to leave
+     189px of empty margin each side. MASTER.md §5.1. */
+  --frame-max: 1800px;
 }
 
 /* ── Tailwind theme (Tailwind 4 is CSS-first — there is no tailwind.config.js) ── */
@@ -102,6 +107,7 @@
   --spacing-cell:    var(--pad-cell);
   --spacing-section: var(--pad-section);
   --spacing-page:    var(--pad-page);
+  --spacing-frame:   var(--frame-max);
 
   /* Derived from --radius so there is a single source. brutalism → 0px, no
      exceptions (MASTER.md §5.1). shadcn's button reads var(--radius-md). */

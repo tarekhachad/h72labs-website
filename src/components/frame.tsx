@@ -7,52 +7,46 @@ import { cn } from "@/lib/utils";
 //   - border-radius: 0 everywhere, no exceptions.
 //   - no box-shadow. Depth is not part of this direction.
 //   - adjacent borders collapse with -1px offsets; a doubled 2px seam is a bug.
+//
+// SHELL BEHAVIOUR (2026-08-27): the frame fills the padded area and is exactly
+// one viewport tall at >= 1280px, so no page scrolls on desktop. Below 1280px it
+// reverts to natural document height and the page scrolls normally. 1024-1279
+// (tablets, small windows) is included in that: forcing one screen there gave
+// narrow columns with internally-scrolling panels, which reads worse than a
+// page that simply scrolls.
+
+/** The page shell. Owns the viewport height and the gutter. */
+export function PageShell({ children }: { children: React.ReactNode }) {
+  // h-dvh, not h-screen: dvh accounts for mobile browser chrome, where vh
+  // overshoots by exactly the toolbar height and produces a page that scrolls.
+  return <main className="p-page xl:h-dvh">{children}</main>;
+}
 
 export function Frame({ children, className }: { children: React.ReactNode; className?: string }) {
   return (
-    <div className={cn("mx-auto w-full max-w-[1120px] border border-line", className)}>
+    <div
+      className={cn(
+        "mx-auto flex w-full max-w-frame flex-col border border-line",
+        "xl:h-full xl:overflow-hidden",
+        className,
+      )}
+    >
       {children}
     </div>
   );
+}
+
+/** The region between header and footer. Absorbs the remaining height. */
+export function FrameBody({ children, className }: { children: React.ReactNode; className?: string }) {
+  // min-h-0 is load-bearing: flex children default to min-height:auto and refuse
+  // to shrink below their content, which breaks the fixed-height shell.
+  return <div className={cn("flex min-h-0 flex-1 flex-col", className)}>{children}</div>;
 }
 
 /** The mono label strip that names each region. MASTER.md §3.2. */
 export function LabelStrip({ children }: { children: React.ReactNode }) {
   return (
-    <div className="border-b border-line bg-surface px-cell py-2 font-mono text-[11px] uppercase tracking-[0.14em] text-dim">
-      {children}
-    </div>
-  );
-}
-
-/**
- * A framed section.
- *
- * `rhythm="open"` (default) uses the fluid section scale — right for the landing
- * page, which is five sections of deliberately low information volume.
- *
- * `rhythm="document"` is tighter. The detail page stacks seven blocks; at open
- * rhythm it ran past 2400px with every paragraph floating in a mostly-empty
- * cell. That is a spacing problem, not an information problem — see the §5.2
- * call recorded in the project log. Do not fix page length by deleting blocks.
- */
-export function Section({
-  children,
-  className,
-  rhythm = "open",
-}: {
-  children: React.ReactNode;
-  className?: string;
-  rhythm?: "open" | "document";
-}) {
-  return (
-    <div
-      className={cn(
-        "border-b border-line px-cell",
-        rhythm === "open" ? "py-section" : "py-10",
-        className,
-      )}
-    >
+    <div className="shrink-0 border-b border-line bg-surface px-cell py-1.5 font-mono text-[11px] uppercase tracking-[0.14em] text-dim">
       {children}
     </div>
   );
@@ -73,10 +67,10 @@ export function StatusLine({ status }: { status: string }) {
  * MASTER.md §5.5: the frame treatment is decided BEFORE capture, so a screenshot
  * has a defined edge on either ground.
  */
-export function ShotFrame({ label = "Screenshot" }: { label?: string }) {
+export function ShotFrame({ label = "Screenshot", className }: { label?: string; className?: string }) {
   return (
-    <div className="flex aspect-[16/10] items-center justify-center border border-line">
-      <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-dim">{label}</span>
+    <div className={cn("flex min-h-0 items-center justify-center border border-line", className)}>
+      <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-dim">{label}</span>
     </div>
   );
 }

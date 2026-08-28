@@ -163,9 +163,12 @@ One column, generous vertical rhythm, no nav clutter. Sections in order:
    start — it renders 1..n, not a hardcoded single card.
 4. **Founder note.** Short. First person. Who is building this and why. This is the only place on
    the site with a human voice rather than an instrument's voice, and that contrast is deliberate —
-   keep it to a few sentences so the contrast stays sharp. No photo for v1.
+   keep it to a few sentences so the contrast stays sharp.
+   **A portrait was added 2026-08-27** (Tarek's call, reversing this section's original "no photo
+   for v1"): pixel art, framed, sitting below the note. Reason given and accepted — the site is
+   otherwise entirely instrument-voiced, and this section is the one place a human element belongs.
 5. **Contact.** The address as text. Nothing else.
-6. **Footer.** `Hachad Solutions LLC` and the theme toggle.
+6. **Footer.** `Hachad Solutions LLC`. *(The theme toggle moved to the header 2026-08-27.)*
 
 ### 5.2 Product detail (templated, one per product)
 
@@ -203,6 +206,13 @@ Concretely, the page renders from the product list and adapts by count:
   a real paragraph. It reads as deliberate, not sparse.
 - **n ≥ 2** → the same entries flow into the grid. Nothing is re-cut, no component is replaced, no
   layout is swapped.
+
+> **Mechanism changed 2026-08-27: the portfolio is now a carousel, one product at a time.** With the
+> frame fixed to one viewport there is no vertical scroll, so a stacked list had nowhere to go.
+> **The requirement above is unchanged and still binding** — it renders from the product list and
+> absorbs n ≥ 2 with no rework; only "rows stack" became "slides advance". **Arrows render only at
+> n ≥ 2**: disabled arrows at n = 1 would be chrome implying content that does not exist, which is
+> the same failure as the "coming soon" cells this section forbids.
 
 The mechanism is a **flow layout that adapts by item count** — not a fixed 3-up grid holding empty
 cells. **Never render placeholder or "coming soon" cells.** One honest entry beats a grid padded

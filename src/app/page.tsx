@@ -1,47 +1,82 @@
+import Link from "next/link";
 import { products } from "@/content/products";
-import { Frame, LabelStrip, Section } from "@/components/frame";
-import { ProductList } from "@/components/product-card";
-import { SiteHeader, SiteFooter, ContactAddress } from "@/components/site-chrome";
+import { PageShell, Frame, FrameBody, LabelStrip, ShotFrame, StatusLine } from "@/components/frame";
+import { SiteHeader, SiteFooter, ContactAddress, Portrait } from "@/components/site-chrome";
 
 // UI_DESIGN §5.1 — section order is CLOSED (§3.3). Two independent sources agreed
-// on it. Do not reorder.
+// on it. The 2026-08-27 refinement redistributes those same sections across the
+// wider frame instead of stacking them vertically; nothing was added or removed.
 export default function Home() {
+  const featured = products[0];
+
   return (
-    <main className="p-page">
+    <PageShell>
       <Frame>
         <SiteHeader />
 
-        {/* The thesis, verbatim and never paraphrased (UI_DESIGN §1). No
-            illustration, no gradient, no background graphic behind it. */}
-        <Section>
-          <h1 className="max-w-[19ch] text-[clamp(1.7rem,3.9vw,2.75rem)] font-medium leading-[1.22] tracking-[-0.02em] text-balance">
-            H72 Labs builds AI tools that turn noisy information into clarity.
-          </h1>
-        </Section>
+        <FrameBody>
+          {/* The thesis, verbatim and never paraphrased (UI_DESIGN §1). No
+              illustration, no gradient, no background graphic behind it. */}
+          <div className="shrink-0 border-b border-line px-cell py-[clamp(28px,4.5vh,56px)]">
+            <h1 className="max-w-[19ch] text-balance text-[clamp(1.6rem,3.4vw,2.6rem)] font-medium leading-[1.18] tracking-[-0.022em]">
+              H72 Labs builds AI tools that turn noisy information into clarity.
+            </h1>
+          </div>
 
-        <LabelStrip>Portfolio</LabelStrip>
-        <div className="border-b border-line">
-          <ProductList products={products} />
-        </div>
+          {/* minmax(0,·) on both tracks: fr columns default to min-width:auto and
+              refuse to shrink below their content, which lets an image blow the
+              layout out. This has bitten this project three times. */}
+          <div className="grid min-h-0 flex-1 grid-cols-1 xl:grid-cols-[minmax(0,1.85fr)_minmax(0,1fr)]">
+            <div className="flex min-h-0 flex-col border-b border-line xl:border-b-0 xl:border-r">
+              <LabelStrip>01 — Product</LabelStrip>
+              <div className="grid min-h-0 flex-1 grid-cols-[38px_minmax(0,1fr)] md:grid-cols-[52px_minmax(0,1fr)]">
+                <div className="flex justify-center border-r border-line pt-cell font-mono text-[13px] font-medium tabular-nums text-accent">
+                  01
+                </div>
+                <div className="grid min-h-0 gap-cell p-cell md:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]">
+                  <ShotFrame className="aspect-[16/10] md:aspect-auto" />
+                  <div className="flex min-h-0 flex-col">
+                    <h2 className="text-[1.15rem] font-semibold tracking-[-0.01em]">
+                      <Link href={`/portfolio/${featured.slug}`} className="transition-colors hover:text-accent">
+                        {featured.name}
+                      </Link>
+                    </h2>
+                    <p className="mt-2.5 leading-relaxed text-dim">{featured.summary}</p>
+                    <div className="mt-6 md:mt-auto md:pt-6">
+                      <StatusLine status={featured.status} />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
 
-        <LabelStrip>Founder</LabelStrip>
-        <Section>
-          {/* The only place on the site with a human voice rather than an
-              instrument's. Keep it short so the contrast stays sharp. §5.1.4 */}
-          <p className="max-w-[56ch] text-[1.0625rem] leading-relaxed">
-            I&apos;m Tarek Hachad. I build these on my own — the design, the code, and the
-            unglamorous parts in between. H72 Labs is where that work lives. Right now there is one
-            product and it isn&apos;t finished; when it is, this page will say so.
-          </p>
-        </Section>
+            <div className="flex min-h-0 flex-col">
+              <LabelStrip>Founder</LabelStrip>
+              {/* The only place on the site with a human voice rather than an
+                  instrument's. Keep it short so the contrast stays sharp. §5.1.4 */}
+              <div className="flex min-h-0 flex-1 flex-col gap-3.5 overflow-y-auto p-cell">
+                <p className="text-[0.92rem] leading-relaxed text-dim">
+                  I&apos;m Tarek Hachad. I build these on my own — the design, the code, and the
+                  unglamorous parts in between. H72 Labs is where that work lives.
+                </p>
+                <div className="flex min-h-0 flex-1 justify-center">
+                  <Portrait
+                    priority
+                    className="h-full w-auto max-w-full border border-line object-contain"
+                  />
+                </div>
+              </div>
 
-        <LabelStrip>Contact</LabelStrip>
-        <Section>
-          <ContactAddress />
-        </Section>
+              <LabelStrip>Contact</LabelStrip>
+              <div className="flex shrink-0 flex-col items-center justify-center p-cell text-center">
+                <ContactAddress className="break-all font-mono text-[clamp(0.95rem,1.15vw,1.2rem)] text-accent transition-opacity hover:opacity-80" />
+              </div>
+            </div>
+          </div>
+        </FrameBody>
 
         <SiteFooter />
       </Frame>
-    </main>
+    </PageShell>
   );
 }

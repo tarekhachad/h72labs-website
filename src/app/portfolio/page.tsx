@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { products } from "@/content/products";
-import { Frame, LabelStrip } from "@/components/frame";
-import { ProductList } from "@/components/product-card";
+import { PageShell, Frame, FrameBody } from "@/components/frame";
 import { SiteHeader, SiteFooter } from "@/components/site-chrome";
+import { ProductCarousel } from "@/components/product-carousel";
 
 export const metadata: Metadata = {
   title: "Portfolio — H72 Labs",
@@ -11,17 +11,14 @@ export const metadata: Metadata = {
 
 export default function PortfolioPage() {
   return (
-    <main className="p-page">
+    <PageShell>
       <Frame>
         <SiteHeader />
-        <LabelStrip>
-          Portfolio — {products.length} {products.length === 1 ? "product" : "products"}
-        </LabelStrip>
-        <ProductList products={products} />
-        <div className="border-t border-line">
-          <SiteFooter />
-        </div>
+        <FrameBody>
+          <ProductCarousel products={products} />
+        </FrameBody>
+        <SiteFooter />
       </Frame>
-    </main>
+    </PageShell>
   );
 }
