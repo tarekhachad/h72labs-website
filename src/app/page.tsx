@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { products } from "@/content/products";
-import { PageShell, Frame, FrameBody, LabelStrip, ShotFrame, StatusLine } from "@/components/frame";
+import { PageShell, Frame, FrameBody, LabelStrip, Shot, ShotFrame, StatusLine } from "@/components/frame";
 import { SiteHeader, SiteFooter, ContactAddress, Portrait } from "@/components/site-chrome";
 
 // UI_DESIGN §5.1 — section order is CLOSED (§3.3). Two independent sources agreed
@@ -53,7 +53,45 @@ export default function Home() {
                   01
                 </div>
                 <div className="grid min-h-0 gap-cell p-cell md:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]">
-                  <ShotFrame className="aspect-[16/10] md:aspect-auto" />
+                  {/* The product's FIRST capture — the feed shot, which reads as
+                      "this is what the thing is" at card size.
+
+                      `square`, not `src`: this box is very close to a square
+                      (measured 555x592 at 1920, 351x337 at 1280), so the 16:10
+                      master would either crop its sides away under `cover` or sit
+                      in a band of white under `contain`. The square recapture
+                      fills it. Falling back to the master keeps `contain`, which
+                      is the honest compromise when no matched variant exists. */}
+                  {/* Centres the hugging shot; leftover space sits OUTSIDE its rule. */}
+                  <div className="flex min-h-0 items-center justify-center">
+                  {featured.screenshots[0] ? (
+                    <Shot
+                      asset={featured.screenshots[0].square ?? featured.screenshots[0].master}
+                      alt={featured.screenshots[0].alt}
+                      fit={featured.screenshots[0].square ? "hug" : "contain"}
+                      /* A narrow cell inside the product column, never half the
+                         viewport. Measured 555px at 1920/2560, 351px at 1280,
+                         268px at 390 — so the mobile clause has to be 100vw, not
+                         a fraction. The first clause caps it: the frame stops
+                         growing at --frame-max once the viewport passes 1868px,
+                         so the box is 555px from there on however wide the screen
+                         gets, and 30vw would keep asking for more (768px at 2560,
+                         over 1000px at 3440). Same cap the other two call sites
+                         carry. */
+                      sizes="(min-width: 1868px) 555px, (min-width: 1280px) 30vw, (min-width: 768px) 45vw, 100vw"
+                      // Next's LCP detector names this image as this page's LCP element.
+                      priority
+                    />
+                  ) : (
+                    // §5.5 parity: the same rectangle the hugged image resolves to.
+                    // WIDTH-driven (`w-full` + aspect), never `h-full` — with an
+                    // explicit height, aspect-ratio can only adjust the auto axis,
+                    // so the empty box stretched to the cell and measured 557x939
+                    // against the image's 557x557 at 2560x1440. Width is the
+                    // binding dimension in this slot at every size measured.
+                    <ShotFrame ratio={[1, 1]} />
+                  )}
+                  </div>
                   <div className="flex min-h-0 flex-col">
                     <h3 className="text-[1.15rem] font-semibold tracking-[-0.01em]">
                       <Link href={`/portfolio/${featured.slug}`} className="transition-colors hover:text-accent">
@@ -79,8 +117,14 @@ export default function Home() {
                   unglamorous parts in between. H72 Labs is where that work lives.
                 </p>
                 <div className="flex min-h-0 flex-1 justify-center">
+                  {/* NOT `priority` any more (2026-08-31). It was the landing
+                      page's only eager image and a fair LCP guess when it was
+                      also the page's largest paint. It is not: Next's LCP
+                      detector names the product screenshot above, so the portrait
+                      was a second preload competing with the real LCP element for
+                      early bandwidth. The contact page's Portrait KEEPS priority —
+                      it is the only image on that page. */}
                   <Portrait
-                    priority
                     className="h-full w-auto max-w-full border border-line object-contain"
                   />
                 </div>

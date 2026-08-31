@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { products, getProduct } from "@/content/products";
-import { PageShell, Frame, FrameBody, LabelStrip, ShotFrame, StatusLine } from "@/components/frame";
+import { PageShell, Frame, FrameBody, LabelStrip, Shot, ShotFrame, StatusLine } from "@/components/frame";
 import { SiteHeader, SiteFooter } from "@/components/site-chrome";
 import { pageMetadata } from "@/lib/site";
 
@@ -10,6 +10,20 @@ import { pageMetadata } from "@/lib/site";
 // unlisted slug is rendered at request time — which still 404s correctly, but
 // makes the README's "no server to run" claim not quite true. Now it is.
 export const dynamicParams = false;
+
+// Block 4 renders this many slots ALWAYS, filled or empty, so the row is the
+// same height either way — the layout must not tell you how finished a product
+// is.
+//
+// ⚠ THIS IS A MANUALLY-MAINTAINED INVARIANT, NOT A TYPE-ENFORCED ONE. The two
+// really is written three times: here, as `md:grid-cols-2` on the row below,
+// and as the arity of Product.screenshots' tuple. Nothing binds them — Tailwind
+// needs a static class string, so the grid cannot be derived from this constant,
+// and the tuple type does not reference it either. Widen that tuple to three
+// without touching this file and `tsc` stays silent, the grid stays two columns,
+// and the third capture is dropped with nothing to notice it. Change all three
+// together or not at all.
+const SCREENSHOT_SLOTS = 2;
 
 export function generateStaticParams() {
   return products.map((p) => ({ slug: p.slug }));
@@ -73,7 +87,16 @@ export default async function ProductDetailPage({ params }: PageProps<"/portfoli
             <StatusLine status={product.status} />
           </div>
 
-          <div className="grid min-h-0 flex-1 grid-cols-1 xl:grid-cols-3">
+          {/* NOT flex-1 any more (changed 2026-08-31). It used to absorb every
+              spare pixel in the frame, which meant the three columns stretched
+              to the full height whether their copy needed it or not — at
+              1920x1080 the tallest column needed 332px and was handed 684px, so
+              352px of the page was whitespace under the text while the
+              screenshots below were squeezed into a 113px strip. Sizing to
+              content and letting block 4 take the remainder puts that space
+              where the evidence is. `min-h-0` plus the panes' own overflow-y
+              keeps the tight case (1280x800) safe rather than overflowing. */}
+          <div className="grid min-h-0 grid-cols-1 xl:grid-cols-3">
             {/* 2 + 3 — what it is, how it's used.
                 ONE scroll container for the whole column, not one per panel. With
                 flex-1 on each panel they split height 50/50 regardless of content,
@@ -128,10 +151,73 @@ export default async function ProductDetailPage({ params }: PageProps<"/portfoli
             </div>
           </div>
 
-          {/* 4 — screenshots */}
-          <div className="grid shrink-0 grid-cols-1 gap-cell border-t border-line p-cell md:grid-cols-2 xl:h-[clamp(72px,10vh,150px)]">
-            <ShotFrame label="Screenshot 1" className="aspect-[16/10] xl:aspect-auto" />
-            <ShotFrame label="Screenshot 2" className="aspect-[16/10] xl:aspect-auto" />
+          {/* 4 — screenshots. Two slots either way: a product with real captures
+              fills them, one without keeps the honest empty frames. The count is
+              fixed at two so the row's height is the same in both states — the
+              layout must not tell you how finished a product is.
+
+              ⚠ NO LabelStrip HERE, AND IT IS A TRADE, NOT AN OVERSIGHT — raised
+              by review 2026-08-29, still Tarek's call. Every other block on this
+              page opens with one, and LabelStrip's own doc argues headings are
+              how a screen-reader user navigates, which applies here too. But a
+              strip measures 30px, and 30px here now comes straight off the
+              image. The images do carry alt text, so the block is not unlabelled
+              to assistive tech — it is unlabelled in the page OUTLINE.
+
+              THE MIXED STATE IS REAL AND INTENTIONAL: `screenshots` may hold
+              exactly one, which renders one capture beside one empty frame. That
+              is the honest rendering of "this product has one screenshot so far",
+              and it is the state the next product hits the moment it gets its
+              first capture. Do not "fix" it by hiding the empty twin — that would
+              make one screenshot and two look identical. */}
+          {/* HEIGHT: this block now takes ALL the space the text above does not
+              (2026-08-31). It was a fixed clamp back when the grid above was
+              flex-1 and swallowed the slack; the result was a 113px strip at
+              1920x1080 sitting under 352px of empty white. flex-1 here inverts
+              that — text takes what it needs, the evidence takes the rest.
+
+              CAPPED at exactly the height that shows the whole 16:10 capture, so
+              it stops growing once the image is fully visible rather than
+              letterboxing it on very tall screens. The cap is derived, not
+              guessed: the frame is min(100vw - 2*34 page padding, 1800px), the
+              row subtracts 2*24 cell padding and a 24px gap, and each of the two
+              boxes takes half — so box width = (vw - 68 - 48 - 24)/2 = 0.5vw - 70, and a
+              16:10 box needs exactly 0.625x that:
+                0.625 * (0.5vw - 70)  =  31.25vw - 43.75
+              which is 540px once the frame itself caps (vw >= 1868).
+              ⚠ The 48px of cell padding is NOT in this number any more — it moved
+              to the wrapper above when the cap moved to this inner grid. It was
+              briefly still included (588px), which made the box 48px TALLER than
+              16:10 at 2560x1440, and `cover` answers a too-tall box by cropping
+              the SIDES: 8% off the left and right, cutting into the masthead. A
+              cap that is too generous is not a cosmetic error here.
+              The 24px gap is not MASTER.md's --gap-cell; see the note on `sizes`'s
+              default in frame.tsx for why. */}
+          {/* The outer element absorbs the leftover height; the inner grid carries
+              the cap. Once the row hits its 540px cap the slack has to go SOMEWHERE, and
+              with the cap on the outer element it pooled into a dead band above
+              the footer — 286px of it at 2560x1440. Centring the capped grid
+              inside a flex-1 parent splits that slack above and below instead, so
+              it reads as breathing room rather than a gap in the frame. */}
+          <div className="flex min-h-0 flex-1 items-center border-t border-line p-cell">
+            <div className="grid w-full grid-cols-1 gap-cell md:grid-cols-2 xl:h-full xl:max-h-[min(calc(31.25vw-43.75px),540px)]">
+            {Array.from({ length: SCREENSHOT_SLOTS }, (_, i) => {
+              const shot = product.screenshots.at(i);
+              return shot ? (
+                <Shot
+                  key={shot.master.src}
+                  asset={shot.master}
+                  alt={shot.alt}
+                  // Only the first: one element is the LCP, and preloading the
+                  // second would buy nothing.
+                  priority={i === 0}
+                  className="aspect-[16/10] xl:aspect-auto"
+                />
+              ) : (
+                <ShotFrame key={i} label={`Screenshot ${i + 1}`} className="aspect-[16/10] xl:aspect-auto" />
+              );
+            })}
+            </div>
           </div>
 
           {/* 7 — origin. Rendered only when it exists; an empty block would be the

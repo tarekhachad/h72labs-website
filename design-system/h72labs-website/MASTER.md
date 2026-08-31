@@ -349,7 +349,13 @@ wrong — not the constraint.**
 Anatomy, in order (brief §5.5):
 
 1. **Index numeral** — mono, `--accent`, own bordered column, `56px` wide (`38px` under 760px)
-2. **Screenshot** — `1px solid var(--line)`, 16:10, no radius, no shadow
+2. **Screenshot** — `1px solid var(--line)`, no radius, no shadow. **The aspect is the CAPTURE's,
+   not a fixed 16:10** *(amended 2026-08-31; 16:10 as written here was the placeholder's shape, and
+   it survived into the spec after real captures landed)*. A card's box stretches with the frame's
+   height — the landing slot measures 555x592 at 1920 and 555x937 at 2560 — so no single source
+   aspect fills it, and forcing 16:10 crops the capture's sides: the carousel sliced a headline
+   mid-word. The rule therefore goes **on the image**, which hugs it by construction. §6 records
+   this and `Shot`'s `hug` mode implements it. Do not "restore" a fixed 16:10 here
 3. **Product name** — sans 600
 4. **One-sentence description** — sans, `--dim`
 5. **Status line** — mono, in a `1px solid var(--line)` box, `--ink`. Reads `Status: in development`
@@ -445,5 +451,31 @@ Committed scope, not a nice-to-have (brief §7, Tarek's call against the recomme
   (the H72 Labs name, wordmark, visual identity, and site copy) explicitly excluded. `LICENSE` is
   written and `README.md`'s section is filled. One `README` TODO remains and is not blocking:
   run commands, which need the scaffold (Phase 1).
+- **`--gap-cell` IS DEAD CSS — recorded here 2026-08-31 because it was previously known only to a
+  code comment.** §4 defines it as `clamp(32px, 3.4vw, 40px)` for the screenshot-to-text gap inside a
+  product row. `globals.css` declares it at `:root` but never registers it in the `@theme inline`
+  block, so every `gap-cell` utility on the site silently resolves through `--spacing-cell`
+  (= `--pad-cell` = **24px**) instead. Measured: computed `columnGap` on the detail page's
+  screenshot row is 24px, and the `sizes` arithmetic in `frame.tsx` is derived from 24px because
+  that is what actually renders. Wiring the token in is a one-line change with a **site-wide visual
+  effect** — every `gap-cell` gap grows by up to 16px — so it is a deliberate decision, not a
+  cleanup. Until then the spec and the render disagree and this entry is the disclosure.
 - **`--accent` `#2563EB`** — kept knowingly (§1.4). A swap after this point is a stated decision, not drift.
-- **Screenshots do not exist yet.** The frame treatment is specified; the captures are Phase 3 work.
+- ~~**Screenshots do not exist yet.**~~ — **CLOSED 2026-08-31.** Real captures of the News
+  Aggregator now fill **every** screenshot slot on the site: the product detail page's two-up row
+  (the front page, and one story expanded), the landing page's product card, and the portfolio
+  carousel panel. Lossless WebP at native 2x. §5.5's frame treatment was specified before capture
+  exactly as intended and held — every one sits in the 1px `--line` box, and the filled and empty
+  states draw the same rectangle.
+
+  **Two rules were earned filling them, and both are now encoded in `Shot` rather than left to each
+  call site:**
+  - **The top of a capture is never cropped.** The masthead and topic nav have to read, or the shot
+    looks like a rendering fault. `object-position` is top wherever cropping is possible; losing the
+    BOTTOM is fine and intended.
+  - **No band of empty space inside the rule.** A slot whose box shape moves with the viewport (the
+    landing card is 555x592 at 1920 but 555x937 at 2560) cannot be filled by any single source
+    aspect. Those slots put the rule *on the image*, so it hugs by construction.
+
+  *Deferred, date-blocked: one digest per page, so the three pages show three different days —
+  see `docs/internal/(C) ROADMAP.md` → "Deferred — needs elapsed time".*

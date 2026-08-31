@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useAnimate, useReducedMotion } from "motion/react";
 import Link from "next/link";
 import type { Product } from "@/content/products";
-import { ShotFrame, StatusLine } from "@/components/frame";
+import { Shot, ShotFrame, StatusLine } from "@/components/frame";
 
 /**
  * The portfolio, one product at a time. Replaced the stacked list on 2026-08-27:
@@ -145,9 +145,10 @@ export function ProductCarousel({ products }: { products: Product[] }) {
 
       {/* A dedicated live region, rather than aria-live on the panel itself. The
           panel announces everything it contains on every advance — the summary
-          paragraph, the link text, the status pill, and ShotFrame's "Screenshot"
-          placeholder, which is identical on every slide. This says the one thing
-          that changed. */}
+          paragraph, the link text, the status pill, and the screenshot's alt text
+          (or, for a product with no capture yet, ShotFrame's "Screenshot"
+          placeholder, identical on every slide). This says the one thing that
+          changed. */}
       <span aria-live="polite" className="sr-only">
         {many ? `Showing ${i + 1} of ${n}: ${p.name}` : ""}
       </span>
@@ -157,8 +158,45 @@ export function ProductCarousel({ products }: { products: Product[] }) {
         id="carousel-panel"
         className="grid min-h-0 flex-1 grid-cols-1 xl:grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)]"
       >
-        <div className="flex min-h-0 border-b border-line p-cell xl:border-b-0 xl:border-r">
-          <ShotFrame className="aspect-[16/10] w-full xl:aspect-auto xl:flex-1" />
+        <div className="flex min-h-0 items-center justify-center border-b border-line p-cell xl:border-b-0 xl:border-r">
+          {/* Same rule as the landing card, different shape. This panel measures
+              948x823 at 1920 and 621x543 at 1280 — about 23:20 — so it uses the
+              `card` recapture rather than the 16:10 master. With the master under
+              `cover` this panel sliced the headline mid-word ("...ood Death Toll
+              Nears 3,000 Missing"); under `contain` it sat in a white band. A
+              matched source needs neither.
+
+              NO `key` HERE — and that is the whole point of the note on the panel
+              above. This renders a focusable <a>; keying it on the slug would
+              remount it on every advance, so tabbing to the screenshot and
+              pressing ArrowRight would tear the focused link out of the DOM. React
+              swaps the asset in place and focus survives.
+
+              THE CAVEAT, because the guarantee is narrower than it looks: it holds
+              only while BOTH slides render the same component here. Advance from a
+              product with a capture to one without and React swaps `Shot` for
+              `ShotFrame` — different types, so it remounts and focus is lost. That
+              is not fixable by a key, and it is not really a bug either: the link
+              genuinely does not exist on a slide with no capture, so there is
+              nothing left to hold focus. Worth knowing before someone "fixes" it.
+              Unreachable while every product has a capture. */}
+          {p.screenshots[0] ? (
+            <Shot
+              asset={p.screenshots[0].card ?? p.screenshots[0].master}
+              alt={p.screenshots[0].alt}
+              fit={p.screenshots[0].card ? "hug" : "contain"}
+              /* This panel is ONE column below 1280px and ~56% of the frame above
+                 it (1.25fr of 2.25fr, less padding) — not the two-up row Shot
+                 defaults to. With the default, 768px asked for 50vw and got an
+                 828px file for a 670px box: soft at 2x. Measured 948px at both
+                 1920 and 2560, where the frame itself caps. */
+              sizes="(min-width: 1868px) 950px, (min-width: 1280px) 56vw, 100vw"
+              // Next's LCP detector names this image as this page's LCP element.
+              priority
+            />
+          ) : (
+            <ShotFrame ratio={[23, 20]} />
+          )}
         </div>
         <div className="flex min-h-0 flex-col p-cell">
           <h2 className="text-[clamp(1.15rem,2vw,1.6rem)] font-semibold tracking-[-0.015em]">
