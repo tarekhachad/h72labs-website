@@ -15,11 +15,27 @@ export type ProductStatus = "in development";
 /**
  * One real capture of a running product. See `Product.screenshots`.
  *
- * `src` is the 16:10 master. The optional variants are THE SAME MOMENT IN THE
- * PRODUCT recaptured at another aspect ratio, for slots whose box is a different
+ * `src` is the 16:10 master. The optional variants are the same SCREEN of the
+ * product recaptured at another aspect ratio, for slots whose box is a different
  * shape — not crops of the master, because cropping a 16:10 feed to a square
  * would slice the cards' left and right edges off. Recapturing lets the product's
  * own responsive layout fill each shape.
+ *
+ * SAME SCREEN, NOT NECESSARILY THE SAME MOMENT — corrected 2026-09-01, and the
+ * distinction is load-bearing. The variants used to come from one digest run, so
+ * the identical three stories appeared on the landing page, the portfolio and the
+ * detail page; a reader cannot tell from that whether the product produces a new
+ * edition each day or one canned page. Tarek's call on 2026-08-31 was that they
+ * be captured on DIFFERENT DAYS; the rollout started the next morning and runs one
+ * capture per day, so the dates in the record differ on purpose. `capturedOn` is
+ * the day behind a given asset and the only record of where the rollout has got
+ * to — the status block beside `screenshots` states the policy and deliberately
+ * does not restate its progress. The consequence for anyone
+ * editing this file, whatever the state of that rollout: `alt` is shared
+ * across a Screenshot's variants, so it may only state what is true of every
+ * variant on every one of those days — which in practice means describing the
+ * SHAPE of the screen (a lead card, its controls, further cards below) and never
+ * a headline, a topic, a card count that differs, or a date.
  *
  * Why they exist at all: every slot draws the image with `object-cover`, which
  * fills the box and crops the overflowing axis. Give it a source whose aspect
@@ -39,6 +55,24 @@ export type ScreenshotAsset = {
    */
   width: number;
   height: number;
+  /**
+   * The date of the product run this asset was captured on, ISO `YYYY-MM-DD`.
+   * NOTHING RENDERS THIS. It exists because the variants are deliberately
+   * captured on different days (see the type doc above) and provenance had been
+   * living only in a hand-written comment — which is precisely the thing that
+   * goes stale when one variant is recaptured and the prose beside it is not.
+   *
+   * BE CLEAR ABOUT WHAT THIS BUYS, because it is less than it looks. Required
+   * rather than optional means a NEW asset cannot be added without stating a day
+   * — `tsc` catches the omission. It cannot catch a STALE value: recapture
+   * `pna-feed.webp` on Sep 2, leave this at "2026-08-31", and everything still
+   * compiles and ships a date that lies. Nothing in the type system can know what
+   * is inside a .webp — and the type is a bare `string`, so it will not catch a
+   * malformed date either. The real guard is the recipe in
+   * docs/internal/(C) ROADMAP.md, which lists updating this field as a step of
+   * every recapture alongside rewriting the alt text.
+   */
+  capturedOn: string;
 };
 
 export type Screenshot = {
@@ -158,25 +192,39 @@ export const products: Product[] = [
       "Backgrounding the tab while a digest is generating hides the new cards until you reload.",
     ],
     origin: null,
-    // ⚠ DEFERRED, DATE-BLOCKED (Tarek, 2026-08-31): all four captures below come
-    // from the SAME digest, so the same stories appear on three pages. The plan is
-    // one digest per page — Aug 31 on the landing card (already the case), Sep 1 on
-    // the portfolio carousel, Sep 2 on the detail row plus that day's expanded
-    // story. It shows the app produces a new edition daily instead of asserting it.
-    // Needs a digest that only exists on the day, so it is one capture per day.
-    // Full recipe, aspects and capture viewports: docs/internal/(C) ROADMAP.md
-    // → "Deferred — needs elapsed time".
+    // ⚠ IN PROGRESS, DATE-BLOCKED (Tarek, 2026-08-31). Filed in the ROADMAP under
+    // "Deferred — needs elapsed time"; deferred there means waiting on a day to
+    // arrive, not unstarted.
     //
-    // RECAPTURED 2026-08-31 from a fresh digest run against live RSS feeds, on a
-    // throwaway account so no personal data is in frame. Login, signup and
-    // onboarding are deliberately not pictured: they are the least finished
-    // screens in the product.
+    // ONE DIGEST PER PAGE, so no two PAGES repeat the same edition's stories. That
+    // is the finish condition, and it is per page, not per asset: the detail page's
+    // two slots are one digest seen two ways (the feed, then a story from that same
+    // feed expanded), so those two will always share a `capturedOn` and that is
+    // correct. Different days across pages is what makes "a new edition daily"
+    // self-evident rather than asserted, and it needs a digest that only exists on
+    // the day — hence one capture per day.
     //
-    // Captured at NATIVE 2x resolution (3200x2000, 2800x2800, 3852x3349,
-    // 2700x1686) rather than downscaled to 1800px as the first set was — the
-    // portfolio panel alone renders 948 CSS px, which needs 1896 real pixels on a
-    // retina screen, and the old assets could not supply them. They looked soft,
-    // and on a site whose whole argument is craft that reads as sloppiness.
+    // DO NOT restate the rollout's progress here. Read `capturedOn` below — it is
+    // the state, per asset, and duplicating it in prose is how three review rounds
+    // running found a comment claiming something the assets no longer said.
+    // Schedule, recipe, aspects and capture viewports live in ONE other place:
+    // docs/internal/(C) ROADMAP.md → "Deferred — needs elapsed time".
+    //
+    // EVERY capture below comes from a real digest run against live RSS feeds, on a
+    // throwaway account so no personal data is in frame — see `capturedOn` on each
+    // asset for which day's run. Login, signup and onboarding are deliberately not
+    // pictured: they are the least finished screens in the product.
+    //
+    // Captured at NATIVE retina resolution rather than downscaled to 1800px as the
+    // first set was: the portfolio panel alone renders 948 CSS px, which needs 1896
+    // real pixels on a retina screen, and the old assets could not supply them.
+    // They looked soft, and on a site whose whole argument is craft that reads as
+    // sloppiness. Three are a straight 2x (3200x2000, 2800x2800, 2700x1686). THE
+    // CARD CROP IS NOT 2x — it is dsf 2.35, giving 3852x3349, so that its long edge
+    // clears Next's largest srcset bucket (3840w). Below that the browser is handed
+    // a 3840w descriptor for a smaller file, infers a density from the descriptor,
+    // and at DPR3 lays the hugged box out 10-22% smaller than it should. Keep any
+    // recapture of this variant above 3840px on its long edge.
     //
     // WHAT THEY ACTUALLY SHOW, stated precisely because the temptation is to
     // claim they cover all of block 2's sentence. Each feed variant leads with one
@@ -187,31 +235,58 @@ export const products: Product[] = [
     // wrongly. What is true of the assets now shipped: the master's single further
     // row is fully rendered with margin below it; the SQUARE crop's last row is
     // complete including its "Save / Sources" footer; and the CARD crop was
-    // RECAPTURED 2026-08-31 from a 1639x1425 viewport at dsf 2.35 (= the 3852x3349
-    // file) — that viewport height precisely so its bottom edge falls in the
-    // gutter BELOW the last row rather than flush against that row's body copy,
-    // which is how it read before (text running into the 1px rule with no footer
-    // and no margin — the frame's most prominent image looking truncated). The report shot shows a topic label, a headline
-    // and the full multi-paragraph report. NEITHER SHOWS THE SOURCE LIST: the feed
-    // has only the "Sources (n)" affordance, and the report is cut off above its
-    // list. So these evidence "a short summary up front and the full report", and
-    // not yet "and its sources one click down". A capture of the opened source
-    // list would close that gap.
+    // recaptured from a 1639x1425 viewport at dsf 2.35 (= the 3852x3349 file) —
+    // that viewport height precisely so its bottom edge falls in the gutter BELOW
+    // the last row rather than flush against that row's body copy, which is how it
+    // read before (text running into the 1px rule with no footer and no margin —
+    // the frame's most prominent image looking truncated).
+    //
+    // The capture viewport is re-measured against each new digest rather than
+    // carried over: the cards are a different height every day, so a bottom edge
+    // that cuts in the gutter is a property of that day's digest, not of the
+    // number that worked last time. The measurement procedure and the numbers it
+    // produced live in the ROADMAP, not here.
+    //
+    // The report shot shows a topic label, a headline and the full multi-paragraph
+    // report. NEITHER SHOWS THE SOURCE LIST: the feed has only the "Sources (n)"
+    // affordance, and the report is cut off above its list. So these evidence "a
+    // short summary up front and the full report", and not yet "and its sources one
+    // click down". A capture of the opened source list would close that gap.
     screenshots: [
       {
-        master: { src: "/pna-feed.webp", width: 3200, height: 2000 },
-        square: { src: "/pna-feed-square.webp", width: 2800, height: 2800 },
-        card: { src: "/pna-feed-card.webp", width: 3852, height: 3349 },
+        master: { src: "/pna-feed.webp", width: 3200, height: 2000, capturedOn: "2026-08-31" },
+        square: { src: "/pna-feed-square.webp", width: 2800, height: 2800, capturedOn: "2026-08-31" },
+        card: { src: "/pna-feed-card.webp", width: 3852, height: 3349, capturedOn: "2026-09-01" },
         // One alt for all three variants, so it may only claim what is true of
         // every one of them. They differ in how many cards fit — two below the
         // lead in the 16:10 master, four in the square and card crops — hence
         // "further story cards" rather than a count. Scoped to the lead card
         // because it is the only one whose footer is fully in frame in every
         // variant; an earlier version said "each" and was wrong.
+        //
+        // The variants are also DIFFERENT DAYS' digests, so this sentence has to
+        // survive a change of content as well as a change of crop. RE-VERIFY IT
+        // WHENEVER ANY `capturedOn` ABOVE CHANGES — open the new file and read
+        // the alt clause by clause against it (topic label, headline, subject tags,
+        // summary, save control, source count, further cards below). It held at the
+        // last check; it is not guaranteed to hold at the next, because a digest
+        // with one story or one source renders a different card. Anything
+        // day-specific — a headline, a topic, a count — would have to move to a
+        // per-variant alt first.
+        //
+        // KNOWN AND ACCEPTED, not an oversight: because this alt describes only the
+        // SHAPE of the screen, a screen-reader user gets no signal about WHICH
+        // edition any slot holds, however many distinct ones are in play. So the
+        // "a new edition every day" argument the varied captures exist to make is
+        // visual only. Stating the day in the alt would mean splitting one alt into
+        // three, and a date read aloud is a weaker claim than it looks: a reader
+        // hears one date, not a series. The honest fix, if this matters later, is
+        // prose in block 2 saying the captures are different days, which every
+        // reader gets.
         alt: "The front page of the news reader: a lead story card with its topic label, headline, subject tags, summary, a save control and a source count, with further story cards below it.",
       },
       {
-        master: { src: "/pna-report.webp", width: 2700, height: 1686 },
+        master: { src: "/pna-report.webp", width: 2700, height: 1686, capturedOn: "2026-08-31" },
         // The grey summary IS in frame and the alt says so. A previous version
         // claimed it was not — true of the earlier, smaller capture, which clipped
         // it, and quietly false once the shot was retaken at 1800x1125. A comment
