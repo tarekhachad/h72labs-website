@@ -477,5 +477,5 @@ Committed scope, not a nice-to-have (brief §7, Tarek's call against the recomme
     landing card is 555x592 at 1920 but 555x937 at 2560) cannot be filled by any single source
     aspect. Those slots put the rule *on the image*, so it hugs by construction.
 
-  *Deferred, date-blocked: one digest per page, so the three pages show three different days —
-  see `docs/internal/(C) ROADMAP.md` → "Deferred — needs elapsed time".*
+  *One digest per page — the three pages showing three different days — **completed 2026-09-02**.
+  See `docs/internal/(C) ROADMAP.md` → "Deferred — needs elapsed time".*
