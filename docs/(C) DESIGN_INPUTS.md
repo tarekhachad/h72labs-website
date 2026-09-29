@@ -100,6 +100,8 @@ pattern for a filled-out portfolio. That's the future shape, not v1's.
 
 ### 3. The honesty rule (from `CLAUDE.md`, non-negotiable)
 
+> **Superseded 2026-09-29:** PNA is now live and invite-only. The current rule is `CLAUDE.md` → The Honesty Rule. The paragraph below is the input as it stood at design time.
+
 PNA is labeled **in development**. No live product link. No user, traction, or usage claims of any
 kind. No "trusted by," no logos, no testimonials, no fabricated metrics. If a status line is
 ambiguous, make it more conservative.

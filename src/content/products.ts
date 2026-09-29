@@ -2,15 +2,31 @@
 // and every detail page — UI_DESIGN §5.3 and §6.
 //
 // THE HONESTY RULE (CLAUDE.md, non-negotiable) binds this file above all others:
-//   - status is what the product actually is. "in development" is not a placeholder.
-//   - no live link until a product has a working public URL.
-//   - no user, traction, or usage claims. There are none to make.
+//   - status is what the product actually is, never what it is about to be.
+//   - a live link always carries its access condition. `Availability` below
+//     makes a link without a live status, or a live status without a link, a
+//     type error rather than a review finding.
+//   - "live" describes a deployment, never adoption. No user, traction, or
+//     usage claims unless they are true and checkable.
 //   - there is NO metric field on this type, deliberately. See UI_DESIGN §3.1.
 //
 // THE DRIFT RULE (UI_DESIGN §6): when a product's real status changes, this file
 // is edited in the SAME sitting. Nothing surfaces that it has gone stale.
 
-export type ProductStatus = "in development";
+export type ProductStatus = "in development" | "live, invite-only";
+
+/**
+ * Whether a visitor can open the product, and on what terms. A union on
+ * `status` so the two can never disagree.
+ *
+ * `inviteRequest: "email"` renders a mailto ask beside the link, because the
+ * link alone drops a cold visitor on a login form they cannot get past. When a
+ * product grows its own request-access flow behind the link, this member gains
+ * a value that renders no ask here.
+ */
+type Availability =
+  | { status: "in development"; liveUrl: null; inviteRequest: null }
+  | { status: "live, invite-only"; liveUrl: `https://${string}`; inviteRequest: "email" };
 
 /**
  * One real capture of a running product. See `Product.screenshots`.
@@ -84,12 +100,11 @@ export type Screenshot = {
   card?: ScreenshotAsset;
 };
 
-export type Product = {
+export type Product = Availability & {
   slug: string;
   name: string;
   /** One sentence. Used on the card. */
   summary: string;
-  status: ProductStatus;
   /** Detail page, block 2 — a real paragraph, not a tagline. */
   whatItIs: string;
   /** Detail page, block 3. */
@@ -104,11 +119,10 @@ export type Product = {
    * Detail page, block 6 — one line framing the list, then the list itself,
    * both stated flatly with no softening.
    *
-   * THE HONESTY RULE BINDS THIS FIELD. As of 2026-08-27 PNA v1 closed on
-   * 2026-08-15 and Roadmap V2 has not started, so this may NOT claim the product
-   * is actively being worked on — nobody is working on it today. "Still in
-   * development" is true because it matches the status line already carried
-   * elsewhere on the site; "actively being worked on" would not be.
+   * THE HONESTY RULE BINDS THIS FIELD. The framing must not restate status
+   * (the status line already does) or claim work is in progress unless it is.
+   * A line that stays true however the status moves is the safe shape. The
+   * list must not repeat a gap the product has since closed.
    */
   limitsFraming: string;
   limits: string[];
@@ -168,27 +182,29 @@ export const products: Product[] = [
     slug: "personalized-news-aggregator",
     name: "Personalized News Aggregator",
     summary:
-      "Reads a few hundred RSS feeds a day, groups the articles that are really the same story, and writes one card for each thing worth knowing about.",
-    status: "in development",
+      "Reads several hundred articles a day from up to 66 RSS feeds, groups the ones that are really the same story, and writes one card for each thing worth knowing about.",
+    status: "live, invite-only",
+    liveUrl: "https://news.h72labs.com",
+    inviteRequest: "email",
     whatItIs:
       "A daily news reader built around one question: what actually happened today in the things I care about? You choose topics and sources once. After that, asking for the day's news returns a feed where every card is a single story — not a headline, not a topic roundup — written from all the outlets that covered it, with a short summary up front and the full report and its sources one click down.",
     howItsUsed:
-      "Pick topics and preferred sources at signup. Ask for the day's news. Read the feed, expand anything worth more than a summary, bookmark what you want to keep, and walk back through previous days from the history view. That is the whole loop. It is built to be a five-minute morning habit rather than somewhere you lose an hour.",
+      "Join by invite and pick topics and preferred sources. Ask for the day's news. Read the feed, expand anything worth more than a summary, bookmark what you want to keep, and walk back through previous days from the history view. That is the whole loop. It is built to be a five-minute morning habit rather than somewhere you lose an hour.",
     stack: {
       pipeline:
-        "RSS ingest → local embedding-based clustering → Claude Haiku notability triage → Claude Sonnet card writing → ranked front page.",
+        "RSS ingest → local embedding clustering → Claude Haiku triage → Haiku or Sonnet card writing → Haiku front-page ranking.",
       details: [
-        "The tiering is the design, not an optimization bolted on afterwards. Embeddings run locally and cost nothing, so clustering several hundred articles is free. Haiku is cheap enough to ask “is this worth writing about?” of every cluster. Sonnet only ever sees the clusters that survived triage.",
-        "Next.js, with Supabase for Postgres and managed authentication.",
+        "Embeddings run locally, so clustering is free. Haiku judges every cluster and writes the single-source cards, about nine in ten; Sonnet writes only stories several outlets covered.",
+        "Next.js on Vercel with Supabase. Every reader's Claude calls run on one server-side key, so a Postgres ledger reserves each digest's worst-case cost before any call and settles it after; a crashed run still counts. Caps: $2.00 per account, $10.00 overall, per 24 hours.",
+        "Signup needs a single-use invite, enforced in a Supabase auth hook; sessions can read their digests but not write them. Both were probed against the live app.",
       ],
     },
-    limitsFraming: "Still in development — these are the known gaps, not hidden ones.",
+    limitsFraming: "The gaps known today, stated up front.",
     limits: [
-      "It is not deployed. It runs locally, for one person. There are no users.",
-      "“Today” is a UTC day, not yours. Generate a digest on an Atlanta evening and it can reclassify itself as yesterday before you have read it.",
+      "It has no users yet besides the person who built it. Signup is by invite only.",
       "Two outlets covering one story sometimes still produce two cards. The clustering is good, not solved.",
-      "There is no password reset.",
       "Backgrounding the tab while a digest is generating hides the new cards until you reload.",
+      "Each digest has two minutes to finish. Live runs so far used five topics and took about a minute; a profile with every topic pulls about twice the articles and hasn't been run live yet.",
     ],
     origin: null,
     // ONE DIGEST PER PAGE — the rollout of the policy stated in the

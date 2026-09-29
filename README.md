@@ -68,10 +68,7 @@ component rules, with provenance and accessibility reasoning behind each value.
 against the token spec in both light and dark themes, and the site has been through an
 accessibility and layout audit.
 
-Note on the products listed on the site: they are labeled **in development** because that is what
-they are. As of 2026-08-28 the Personalized News Aggregator runs locally only — it is not deployed
-and has no external users. **This site being live does not change that**, and the two must not be
-conflated: the studio's front door is public; the product behind it is not.
+Note on the products listed on the site: each status line says exactly what the product is. As of 2026-09-29 the Personalized News Aggregator is live at <https://news.h72labs.com> with invite-only signup, and it has no users besides its builder, so the site labels it **live, invite-only** and makes no usage claims. Live describes the deployment, not adoption, and the two must not be conflated.
 
 ## License
 

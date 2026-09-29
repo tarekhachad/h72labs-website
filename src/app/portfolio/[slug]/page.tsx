@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { products, getProduct } from "@/content/products";
 import { PageShell, Frame, FrameBody, LabelStrip, Shot, ShotFrame, StatusLine } from "@/components/frame";
 import { SiteHeader, SiteFooter } from "@/components/site-chrome";
+import { ProductAccess } from "@/components/product-access";
 import { pageMetadata } from "@/lib/site";
 
 // Every product is known at build time, so there is nothing to resolve on
@@ -84,7 +85,12 @@ export default async function ProductDetailPage({ params }: PageProps<"/portfoli
             <h1 className="text-balance text-[clamp(1.2rem,2.3vw,1.75rem)] font-semibold tracking-[-0.018em]">
               {product.name}
             </h1>
-            <StatusLine status={product.status} />
+            {/* Beside the title, not under it: a second row here comes straight
+                off the screenshot strip, which gets only what the text leaves. */}
+            <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
+              <ProductAccess product={product} className="gap-1" />
+              <StatusLine status={product.status} />
+            </div>
           </div>
 
           {/* NOT flex-1 any more (changed 2026-08-31). It used to absorb every

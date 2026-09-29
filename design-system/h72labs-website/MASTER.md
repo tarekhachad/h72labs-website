@@ -358,7 +358,8 @@ Anatomy, in order (brief §5.5):
    this and `Shot`'s `hug` mode implements it. Do not "restore" a fixed 16:10 here
 3. **Product name** — sans 600
 4. **One-sentence description** — sans, `--dim`
-5. **Status line** — mono, in a `1px solid var(--line)` box, `--ink`. Reads `Status: in development`
+5. **Status line**: mono, in a `1px solid var(--line)` box, `--ink`. Reads `Status: <product status>`, e.g. `Status: live, invite-only`. The label set is `ProductStatus` in `src/content/products.ts`.
+6. **Access line** (only when the product has a live URL): mono 12px, `--accent` links: `Open the app ↗ (invite-only)` with the qualifier in `--dim`, and `Request an invite →` while signup is gated. Sits directly above the status line; on the detail page it sits beside it. This is an access affordance, not a metric slot: it states how to get in, never how many people have.
 
 Verified against §9.2's empty-slot test: rendered with nothing in a metric position, the card does
 not look broken.

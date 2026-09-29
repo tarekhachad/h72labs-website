@@ -7,9 +7,9 @@ import { pageMetadata } from "@/lib/site";
 
 export const metadata: Metadata = pageMetadata({
   title: "Portfolio",
-  // Not "everything H72 Labs has built" — the one entry is labelled in
-  // development everywhere else on the site, and a description implying
-  // delivered work would contradict it. The honesty rule reaches metadata.
+  // Not "everything H72 Labs has built": a description that sizes the body of
+  // work claims more than one live, invite-only product with no users supports.
+  // The honesty rule reaches metadata.
   description: "H72 Labs' product portfolio, with a detail page for each.",
   path: "/portfolio",
 });

@@ -5,6 +5,7 @@ import { useAnimate, useReducedMotion } from "motion/react";
 import Link from "next/link";
 import type { Product } from "@/content/products";
 import { Shot, ShotFrame, StatusLine } from "@/components/frame";
+import { ProductAccess } from "@/components/product-access";
 
 /**
  * The portfolio, one product at a time. Replaced the stacked list on 2026-08-27:
@@ -210,6 +211,7 @@ export function ProductCarousel({ products }: { products: Product[] }) {
             Read the detail →
           </Link>
           <div className="mt-6 self-start xl:mt-auto xl:pt-6">
+            <ProductAccess product={p} className="mb-4" />
             <StatusLine status={p.status} />
           </div>
         </div>

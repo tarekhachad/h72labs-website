@@ -2,6 +2,7 @@ import Link from "next/link";
 import { products } from "@/content/products";
 import { PageShell, Frame, FrameBody, LabelStrip, Shot, ShotFrame, StatusLine } from "@/components/frame";
 import { SiteHeader, SiteFooter, ContactAddress, Portrait } from "@/components/site-chrome";
+import { ProductAccess } from "@/components/product-access";
 
 // UI_DESIGN §5.1 — section order is CLOSED (§3.3). Two independent sources agreed
 // on it. The 2026-08-27 refinement redistributes those same sections across the
@@ -100,6 +101,7 @@ export default function Home() {
                     </h3>
                     <p className="mt-2.5 leading-relaxed text-dim">{featured.summary}</p>
                     <div className="mt-6 md:mt-auto md:pt-6">
+                      <ProductAccess product={featured} className="mb-4" />
                       <StatusLine status={featured.status} />
                     </div>
                   </div>

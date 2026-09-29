@@ -104,9 +104,8 @@ here, so a generated component cannot quietly reintroduce a stat badge.
 
 ### 3.2 The honesty rule
 
-- The News Aggregator is labeled **in development**. Not launched, not beta, not live.
-- **No live product link** until a product has a working public URL.
-- **No user, traction, or usage claims of any kind.** None exist.
+- **Current rule lives in `CLAUDE.md` → The Honesty Rule**, which is updated whenever a product's real state moves. As of 2026-09-29: the News Aggregator is labeled **live, invite-only**, and every link to it states the invite condition beside a way to ask for access. (When this brief was written it was undeployed and labeled *in development*; the reasoning in §1 and §2 records the constraint the identity was designed against.)
+- **No user, traction, or usage claims of any kind.** None exist. Live describes the deployment, not adoption.
 - No "trusted by", no client logos, no testimonials, no fabricated metrics.
 - If a status line is ambiguous, make it **more** conservative.
 
@@ -231,7 +230,8 @@ Used on landing and portfolio. Anatomy:
 - Screenshot in a fixed-ratio frame
 - Product name
 - One-sentence description
-- **Status line** (mono, flat: `Status: in development`)
+- **Status line** (mono, flat: `Status: live, invite-only`)
+- **Access line**, only for a product with a live URL (see `MASTER.md` §5.2 item 6)
 - **No metric slot.** See §3.1.
 
 The card must look complete without a metric. If it looks like something is missing, the card is
