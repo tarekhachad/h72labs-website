@@ -182,29 +182,29 @@ export const products: Product[] = [
     slug: "personalized-news-aggregator",
     name: "Personalized News Aggregator",
     summary:
-      "Reads several hundred articles a day from up to 66 RSS feeds, groups the ones that are really the same story, and writes one card for each thing worth knowing about.",
+      "Reads several hundred articles a day, drawn from 371 RSS feeds across 65 topics, groups the ones that are really the same story, and writes one card for each thing worth knowing about.",
     status: "live, invite-only",
     liveUrl: "https://news.h72labs.com",
     inviteRequest: "email",
     whatItIs:
-      "A daily news reader built around one question: what actually happened today in the things I care about? You choose topics and sources once. After that, asking for the day's news returns a feed where every card is a single story — not a headline, not a topic roundup — written from all the outlets that covered it, with a short summary up front and the full report and its sources one click down.",
+      "A daily news reader built around one question: what actually happened today in the things I care about? You choose your topics once, and if you like, the outlets you trust most. After that, asking for the day's news returns a feed where every card is a single story — not a headline, not a topic roundup — written from all the outlets that covered it, with a short summary up front and the full report and its sources one click down.",
     howItsUsed:
-      "Join by invite and pick topics and preferred sources. Ask for the day's news. Read the feed, expand anything worth more than a summary, bookmark what you want to keep, and walk back through previous days from the history view. That is the whole loop. It is built to be a five-minute morning habit rather than somewhere you lose an hour.",
+      "Join by invite and pick three to ten topics, plus any outlets you want to count for more. Ask for the day's news. Read the feed, expand anything worth more than a summary, bookmark what you want to keep, and walk back through previous days from the history view. That is the whole loop. It is built to be a five-minute morning habit rather than somewhere you lose an hour.",
     stack: {
       pipeline:
         "RSS ingest → local embedding clustering → Claude Haiku triage → Haiku or Sonnet card writing → Haiku front-page ranking.",
       details: [
-        "Embeddings run locally, so clustering is free. Haiku judges every cluster and writes the single-source cards, about nine in ten; Sonnet writes only stories several outlets covered.",
+        "Embeddings run locally, so clustering is free. Haiku judges every cluster and writes the cards built from one source, which are most of them; Sonnet writes only the stories several outlets covered.",
         "Next.js on Vercel with Supabase. Every reader's Claude calls run on one server-side key, so a Postgres ledger reserves each digest's worst-case cost before any call and settles it after; a crashed run still counts. Caps: $2.00 per account, $10.00 overall, per 24 hours.",
         "Signup needs a single-use invite, enforced in a Supabase auth hook; sessions can read their digests but not write them. Both were probed against the live app.",
       ],
     },
     limitsFraming: "The gaps known today, stated up front.",
     limits: [
-      "It has no users yet besides the person who built it. Signup is by invite only.",
+      "It's in early testing, and signup is by invite only.",
       "Two outlets covering one story sometimes still produce two cards. The clustering is good, not solved.",
-      "Backgrounding the tab while a digest is generating hides the new cards until you reload.",
-      "Each digest has two minutes to finish. Live runs so far used five topics and took about a minute; a profile with every topic pulls about twice the articles and hasn't been run live yet.",
+      "Most feeds give only a sentence or two per article, so a card is often written from little more than its sources' headlines.",
+      "Each digest has two minutes to finish. The heaviest profile allowed, ten topics, took about a minute when it was measured live.",
     ],
     origin: null,
     // ONE DIGEST PER PAGE — the rollout of the policy stated in the
